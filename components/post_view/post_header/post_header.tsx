@@ -12,6 +12,7 @@ import PostInfo from 'components/post_view/post_info';
 import UserProfile from 'components/user_profile';
 import BotBadge from 'components/widgets/badges/bot_badge';
 import Badge from 'components/widgets/badges/badge';
+import CustomStatusEmoji from "../../custom_status/custom_status_emoji";
 
 export type Props = {
 
@@ -162,6 +163,22 @@ export default class PostHeader extends React.PureComponent<Props> {
                 />
             );
         }
+
+        // TODO - check if custom status enable + status value is set
+        if (!isSystemMessage) {
+            indicator = (
+                <React.Fragment>
+                    <CustomStatusEmoji
+                        userID={post.user_id}
+                        showTooltip={true}
+                    />
+                    {indicator}
+                </React.Fragment>
+            );
+        }
+
+        // TODO - if  custom status enable + current user + status value not set
+        // TODO - set custom status
 
         if (this.props.compactDisplay) {
             colon = (<strong className='colon'>{':'}</strong>);
