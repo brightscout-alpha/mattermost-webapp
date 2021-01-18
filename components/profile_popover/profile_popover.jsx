@@ -3,20 +3,20 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Tooltip } from 'react-bootstrap';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import {Tooltip} from 'react-bootstrap';
+import {FormattedMessage, injectIntl} from 'react-intl';
 
 import EventEmitter from 'mattermost-redux/utils/event_emitter';
 
-import './profile_popover.scss'
+import './profile_popover.scss';
 import Timestamp from 'components/timestamp';
 import OverlayTrigger from 'components/overlay_trigger';
 import UserSettingsModal from 'components/user_settings/modal';
-import { browserHistory } from 'utils/browser_history';
+import {browserHistory} from 'utils/browser_history';
 import * as GlobalActions from 'actions/global_actions';
-import Constants, { ModalIdentifiers, UserStatuses } from 'utils/constants';
-import { t } from 'utils/i18n';
-import { intlShape } from 'utils/react_intl';
+import Constants, {ModalIdentifiers, UserStatuses} from 'utils/constants';
+import {t} from 'utils/i18n';
+import {intlShape} from 'utils/react_intl';
 import * as Utils from 'utils/utils.jsx';
 import Pluggable from 'plugins/pluggable';
 
@@ -27,7 +27,6 @@ import Avatar from 'components/widgets/users/avatar';
 import Popover from 'components/widgets/popover';
 import CustomStatusEmoji from 'components/custom_status/custom_status_emoji';
 import CustomStatusModal from 'components/custom_status/custom_status_modal';
-import { localizeMessage } from 'utils/utils.jsx';
 
 /**
  * The profile popover, or hovercard, that appears with user information when clicking
@@ -164,14 +163,14 @@ class ProfilePopover extends React.PureComponent {
     showCustomStatusTextTooltip = () => {
         const element = this.customStatusTextRef.current;
         if (element && element.offsetWidth < element.scrollWidth) {
-            this.setState({ showTooltip: true })
+            this.setState({showTooltip: true});
         } else {
-            this.setState({ showTooltip: false })
+            this.setState({showTooltip: false});
         }
     }
 
     handleShowDirectChannel = (e) => {
-        const { actions } = this.props;
+        const {actions} = this.props;
         e.preventDefault();
 
         if (!this.props.user) {
@@ -184,14 +183,14 @@ class ProfilePopover extends React.PureComponent {
             return;
         }
 
-        this.setState({ loadingDMChannel: user.id });
+        this.setState({loadingDMChannel: user.id});
 
         actions.openDirectChannelToUserId(user.id).then((result) => {
             if (!result.error) {
                 if (Utils.isMobile()) {
                     GlobalActions.emitCloseRightHandSide();
                 }
-                this.setState({ loadingDMChannel: -1 });
+                this.setState({loadingDMChannel: -1});
                 if (this.props.hide) {
                     this.props.hide();
                 }
@@ -223,7 +222,7 @@ class ProfilePopover extends React.PureComponent {
         if (this.props.hide) {
             this.props.hide();
         }
-        this.props.actions.openModal({ ModalId: ModalIdentifiers.USER_SETTINGS, dialogType: UserSettingsModal });
+        this.props.actions.openModal({ModalId: ModalIdentifiers.USER_SETTINGS, dialogType: UserSettingsModal});
         this.handleCloseModals();
     }
 
@@ -236,7 +235,7 @@ class ProfilePopover extends React.PureComponent {
         const customStatusInputModalData = {
             ModalId: ModalIdentifiers.CUSTOM_STATUS,
             dialogType: CustomStatusModal,
-            dialogProps: { userId: this.props.currentUserId },
+            dialogProps: {userId: this.props.currentUserId},
         };
 
         this.props.actions.openModal(customStatusInputModalData);
@@ -249,7 +248,7 @@ class ProfilePopover extends React.PureComponent {
     }
 
     handleCloseModals = () => {
-        const { modals } = this.props;
+        const {modals} = this.props;
 
         for (const modal in modals) {
             if (!Object.prototype.hasOwnProperty.call(modals, modal)) {
@@ -288,7 +287,7 @@ class ProfilePopover extends React.PureComponent {
         delete popoverProps.canManageAnyChannelMembersInCurrentTeam;
         delete popoverProps.intl;
 
-        const { formatMessage } = this.props.intl;
+        const {formatMessage} = this.props.intl;
 
         var dataContent = [];
         const urlSrc = this.props.overwriteIcon ?
@@ -410,7 +409,7 @@ class ProfilePopover extends React.PureComponent {
                         useRelative={false}
                         useDate={false}
                         userTimezone={this.props.user.timezone}
-                        useTime={{ hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }}
+                        useTime={{hour: 'numeric', minute: 'numeric', timeZoneName: 'short'}}
                     />
                 </div>,
             );
@@ -439,7 +438,7 @@ class ProfilePopover extends React.PureComponent {
                     >
                         {customStatus.text}
                     </div>
-                )
+                );
                 if (this.state.showTooltip) {
                     customStatusText = (
                         <OverlayTrigger
@@ -453,7 +452,7 @@ class ProfilePopover extends React.PureComponent {
                         >
                             {customStatusText}
                         </OverlayTrigger>
-                    )
+                    );
                 }
 
                 customStatusContent = (
@@ -466,8 +465,8 @@ class ProfilePopover extends React.PureComponent {
                 customStatusContent = (
                     <div>
                         <button
-                            className="set-status-btn"
-                            aria-label={localizeMessage('user_profile.custom-status.set-status', 'Set a status').toLowerCase()}
+                            className='user-popover__set-custom-status-btn'
+                            aria-label={Utils.localizeMessage('user_profile.custom-status.set-status', 'Set a status').toLowerCase()}
                             onClick={this.showCustomStatusModal}
                         >
                             <FormattedMessage
@@ -508,7 +507,7 @@ class ProfilePopover extends React.PureComponent {
                     >
                         <LocalizedIcon
                             className='fa fa-pencil-square-o'
-                            title={{ id: t('generic_icons.edit'), defaultMessage: 'Edit Icon' }}
+                            title={{id: t('generic_icons.edit'), defaultMessage: 'Edit Icon'}}
                         />
                         <FormattedMessage
                             id='user_profile.account.editSettings'
@@ -549,7 +548,7 @@ class ProfilePopover extends React.PureComponent {
                     >
                         <LocalizedIcon
                             className='fa fa-paper-plane'
-                            title={{ id: t('user_profile.send.dm.icon'), defaultMessage: 'Send Message Icon' }}
+                            title={{id: t('user_profile.send.dm.icon'), defaultMessage: 'Send Message Icon'}}
                         />
                         <FormattedMessage
                             id='user_profile.send.dm'
@@ -560,7 +559,7 @@ class ProfilePopover extends React.PureComponent {
             );
 
             if (this.props.canManageAnyChannelMembersInCurrentTeam && this.props.isInCurrentTeam) {
-                const addToChannelMessage = formatMessage({ id: 'user_profile.add_user_to_channel', defaultMessage: 'Add to a Channel' });
+                const addToChannelMessage = formatMessage({id: 'user_profile.add_user_to_channel', defaultMessage: 'Add to a Channel'});
                 dataContent.push(
                     <div
                         data-toggle='tooltip'
@@ -577,12 +576,12 @@ class ProfilePopover extends React.PureComponent {
                                 modalId={ModalIdentifiers.ADD_USER_TO_CHANNEL}
                                 role='menuitem'
                                 dialogType={AddUserToChannelModal}
-                                dialogProps={{ user: this.props.user }}
+                                dialogProps={{user: this.props.user}}
                                 onClick={this.props.hide}
                             >
                                 <LocalizedIcon
                                     className='fa fa-user-plus'
-                                    title={{ id: t('user_profile.add_user_to_channel.icon'), defaultMessage: 'Add User to Channel Icon' }}
+                                    title={{id: t('user_profile.add_user_to_channel.icon'), defaultMessage: 'Add User to Channel Icon'}}
                                 />
                                 {addToChannelMessage}
                             </ToggleModalButtonRedux>

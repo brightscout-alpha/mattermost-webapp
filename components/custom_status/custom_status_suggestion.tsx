@@ -1,11 +1,11 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, { useState, useRef } from 'react';
-import { Tooltip } from 'react-bootstrap';
+import React, {useState, useRef} from 'react';
+import {Tooltip} from 'react-bootstrap';
 
 import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
-import { CustomStatus } from 'types/store/custom_status';
+import {CustomStatus} from 'types/store/custom_status';
 import RenderEmoji from 'components/emoji/render_emoji';
 
 import './custom_status.scss';
@@ -18,7 +18,7 @@ type Props = {
 };
 
 const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
-    const { handleSuggestionClick, emoji, text, handleClear } = props;
+    const {handleSuggestionClick, emoji, text, handleClear} = props;
     const [show, setShow] = useState(false);
     const textRef = useRef(null);
 
@@ -42,10 +42,8 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
 
     const showTextTooltip = () => {
         const element = textRef.current;
-        if (element && element.offsetWidth < element.scrollWidth) {
-            return true;
-        }
-    }
+        return element && element.offsetWidth < element.scrollWidth;
+    };
 
     const clearButton = handleClear ?
         (
@@ -65,14 +63,17 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                         className='input-clear-x'
                         onClick={handleRecentCustomStatusClear}
                     >
-                        <i className='icon icon-close-circle' />
+                        <i className='icon icon-close-circle'/>
                     </span>
                 </OverlayTrigger>
             </div>
         ) : null;
 
     let customStatusText = (
-        <span className='statusSuggestion__text' ref={textRef}>
+        <span
+            className='statusSuggestion__text'
+            ref={textRef}
+        >
             {text}
         </span>
     );
@@ -90,9 +91,8 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
             >
                 {customStatusText}
             </OverlayTrigger>
-        )
+        );
     }
-
 
     return (
         <div
