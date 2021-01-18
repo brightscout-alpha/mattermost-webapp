@@ -1,11 +1,11 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useState} from 'react';
-import {Tooltip} from 'react-bootstrap';
+import React, { useState, useRef } from 'react';
+import { Tooltip } from 'react-bootstrap';
 
 import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
-import {CustomStatus} from 'types/store/custom_status';
+import { CustomStatus } from 'types/store/custom_status';
 import RenderEmoji from 'components/emoji/render_emoji';
 
 import './custom_status.scss';
@@ -14,12 +14,13 @@ type Props = {
     handleSuggestionClick: (status: CustomStatus) => void;
     emoji: string;
     text: string;
-    handleClear? : (status: CustomStatus) => void;
+    handleClear?: (status: CustomStatus) => void;
 };
 
 const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
-    const {handleSuggestionClick, emoji, text, handleClear} = props;
+    const { handleSuggestionClick, emoji, text, handleClear } = props;
     const [show, setShow] = useState(false);
+    const textRef = useRef(null);
 
     const showClearButton = () => {
         setShow(true);
@@ -39,6 +40,13 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
         }
     };
 
+    const showTextTooltip = () => {
+        const element = textRef.current;
+        if (element && element.offsetWidth < element.scrollWidth) {
+            return true;
+        }
+    }
+
     const clearButton = handleClear ?
         (
             <div
@@ -57,11 +65,34 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                         className='input-clear-x'
                         onClick={handleRecentCustomStatusClear}
                     >
-                        <i className='icon icon-close-circle'/>
+                        <i className='icon icon-close-circle' />
                     </span>
                 </OverlayTrigger>
             </div>
         ) : null;
+
+    let customStatusText = (
+        <span className='statusSuggestion__text' ref={textRef}>
+            {text}
+        </span>
+    );
+
+    if (showTextTooltip()) {
+        customStatusText = (
+            <OverlayTrigger
+                delayShow={Constants.OVERLAY_TIME_DELAY}
+                placement='top'
+                overlay={
+                    <Tooltip id='custom-status-text'>
+                        {text}
+                    </Tooltip>
+                }
+            >
+                {customStatusText}
+            </OverlayTrigger>
+        )
+    }
+
 
     return (
         <div
@@ -82,9 +113,7 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                     size={20}
                 />
             </div>
-            <span className='statusSuggestion__text'>
-                {text}
-            </span>
+            {customStatusText}
             {show && clearButton}
         </div>
     );
