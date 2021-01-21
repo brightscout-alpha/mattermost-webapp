@@ -236,8 +236,8 @@ export default class StatusDropdown extends React.PureComponent {
                 );
 
             const pulsatingDot = !isStatusSet && (
-                <div className='pulsating_dot' />
-            )
+                <div className='pulsating_dot'/>
+            );
 
             customStatusComponent = (
                 <div
