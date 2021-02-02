@@ -1,6 +1,6 @@
 .StatusModal {
-    //to override the styles from GenericModal class
-    width: 600px !important;
+    width: 600px;
+    //to override the styles from GenericModal and modal-dialog class
     margin: 30px auto !important;
 
     .modal-dialog {
@@ -18,7 +18,7 @@
     }
 
     .modal-footer {
-        margin-top: 0;
+        margin-top: 20px;
         padding: 0 12px 8px;
     }
 
