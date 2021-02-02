@@ -21,6 +21,7 @@ import {formatWithRenderer} from 'utils/markdown';
 import MentionableRenderer from 'utils/markdown/mentionable_renderer';
 import * as Utils from 'utils/utils.jsx';
 import {isMobile} from 'utils/user_agent';
+import {isFirstReply} from 'components/post_view/post';
 
 import * as Emoticons from './emoticons';
 
@@ -511,31 +512,50 @@ export function getValidUserPostFromId(state, id) {
     return getPost(state, id);
 }
 
+function isPostHeaderVisible(post, previousPost, getReplyCount) {
+    //If there is no previous post then current post must have visible header
+    if (!previousPost) {
+        return true;
+    }
+
+    //If current post is first message of a thread then it must have header visible
+    if (isFirstReply(post, previousPost)) {
+        return true;
+    }
+
+    //If current post is a comment and not the first comment of a thread then its header must be hidden
+    if (post.root_id) {
+        return false;
+    }
+
+    //If current post and previous posts both are not comments
+    if (!post.root_id && !previousPost.root_id) {
+        //If a non-comment post has some replies then its header must be visible
+        //If a non-comment post is a consecutive post then its header must be hidden
+        return getReplyCount(post) > 0 || !areConsecutivePostsBySameUser(post, previousPost);
+    }
+
+    return true;
+}
+
 export function getCurrentUserLastPostGroupFirstPostId(state, postListIds) {
     //This function returns the first post id of the last post group by the current user
-    let currentUserLastPost;
+    const getReplyCount = makeGetReplyCount();
 
+    //This function is made to avoid passing the state to the isPostHeaderVisible function
+    const getReplyCountModified = (post) => {
+        return getReplyCount(state, post);
+    };
+
+    let nextPost;
     for (let i = 0; i < postListIds.length; i++) {
-        const id = postListIds[i];
-        const post = getValidUserPostFromId(state, id);
-        if (!post) {
-            //if it is an combinedUserActivityPost, return if the currentUserLastPost is already set
-            if (currentUserLastPost) {
-                return currentUserLastPost.id;
-            }
-            continue;
-        }
+        const post = nextPost || getValidUserPostFromId(state, postListIds[i]);
+        nextPost = i + 1 < postListIds.length ? getValidUserPostFromId(state, postListIds[i + 1]) : undefined;
 
-        if (isPostOwner(state, post) && !isSystemMessage(post)) {
-            if (currentUserLastPost && !areConsecutivePostsBySameUser(currentUserLastPost, post)) {
-                //currentUserLastPost is set and this post is not consecutive so the currentUserLastPost is the first post of the last postGroup
-                return currentUserLastPost.id;
-            }
-            currentUserLastPost = post;
-        } else if (currentUserLastPost) {
-            return currentUserLastPost.id;
+        if (isPostOwner(state, post) && !isSystemMessage(post) && isPostHeaderVisible(post, nextPost, getReplyCountModified)) {
+            return post.id;
         }
     }
 
-    return currentUserLastPost ? currentUserLastPost.id : '';
+    return '';
 }
