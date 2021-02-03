@@ -58,7 +58,7 @@ type Props = {
 
     isChannelSelected: boolean;
 
-    teammateId: string;
+    teammateId?: string;
 
     actions: {
         clearChannelSelection: () => void;

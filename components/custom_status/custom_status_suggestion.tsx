@@ -22,7 +22,7 @@ type Props = {
 const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
     const {handleSuggestionClick, emoji, text, handleClear} = props;
     const [show, setShow] = useState(false);
-    const textRef = useRef(null);
+    const textRef = useRef<HTMLSpanElement>(null);
 
     const showClearButton = () => {
         setShow(true);
