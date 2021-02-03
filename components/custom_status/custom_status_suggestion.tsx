@@ -89,7 +89,7 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                 delayShow={Constants.OVERLAY_TIME_DELAY}
                 placement='top'
                 overlay={
-                    <Tooltip id='custom-status-text'>
+                    <Tooltip id='custom-status-tooltip'>
                         <Markdown
                             message={text}
                             enableFormatting={true}

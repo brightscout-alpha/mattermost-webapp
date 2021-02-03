@@ -29,7 +29,7 @@ type Props = {
 };
 
 const EMOJI_PICKER_WIDTH_OFFSET = 308;
-const suggestedCustomStatuses: UserCustomStatus[] = [
+const defaultCustomStatusSuggestions: UserCustomStatus[] = [
     {emoji: 'calendar', text: 'In a meeting'},
     {emoji: 'hamburger', text: 'Out for lunch'},
     {emoji: 'sneezing_face', text: 'Out Sick'},
@@ -104,6 +104,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
         customStatusEmoji = (
             <RenderEmoji
                 emoji={emoji || 'speech_balloon'}
+                size={20}
             />
         );
     }
@@ -165,7 +166,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                 {'RECENT'}
             </div>
             {
-                recentCustomStatuses.map((status: any) => (
+                recentCustomStatuses.map((status: UserCustomStatus) => (
                     <CustomStatusSuggestion
                         key={status.text}
                         handleSuggestionClick={handleSuggestionClick}
@@ -179,20 +180,17 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     );
 
     const renderCustomStatusSuggestions = () => {
-        const recentCustomStatusTexts = recentCustomStatuses.map((status: any) => status.text);
-        const customStatusSuggestions: any[] = [];
-        suggestedCustomStatuses.map((status: UserCustomStatus) => {
-            if (!recentCustomStatusTexts.includes(status.text)) {
-                customStatusSuggestions.push(
-                    <CustomStatusSuggestion
-                        handleSuggestionClick={handleSuggestionClick}
-                        emoji={status.emoji}
-                        text={status.text}
-                    />,
-                );
-            }
-            return null;
-        });
+        const recentCustomStatusTexts = recentCustomStatuses.map((status: UserCustomStatus) => status.text);
+        const customStatusSuggestions = defaultCustomStatusSuggestions.
+            filter((status: UserCustomStatus) => !recentCustomStatusTexts.includes(status.text)).
+            map((status: UserCustomStatus, index: number) => (
+                <CustomStatusSuggestion
+                    key={index}
+                    handleSuggestionClick={handleSuggestionClick}
+                    emoji={status.emoji}
+                    text={status.text}
+                />
+            ));
 
         if (customStatusSuggestions.length > 0) {
             return (

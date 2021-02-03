@@ -13,6 +13,7 @@ import {RequestStatus} from 'mattermost-redux/constants';
 
 import {updateNewMessagesAtInChannel} from 'actions/global_actions';
 import {getLatestPostId, makeCreateAriaLabelForPost, getCurrentUserLastPostGroupFirstPostId} from 'utils/post_utils.jsx';
+import {showPostHeaderUpdateStatusButton} from 'utils/custom_status';
 import {
     checkAndSetMobileView,
     loadPosts,
@@ -72,7 +73,9 @@ function makeMapStateToProps() {
                 const latestPost = getPost(state, latestPostId);
                 latestPostTimeStamp = latestPost.create_at;
                 latestAriaLabelFunc = createAriaLabelForPost(state, latestPost);
-                currentUserLastPostId = getCurrentUserLastPostGroupFirstPostId(state, postIds);
+                if (showPostHeaderUpdateStatusButton(state)) {
+                    currentUserLastPostId = getCurrentUserLastPostGroupFirstPostId(state, postIds);
+                }
             }
         }
 
