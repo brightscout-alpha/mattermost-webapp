@@ -530,32 +530,35 @@ function isPostHeaderVisible(post, previousPost, getReplyCount) {
 
     //If current post and previous posts both are not comments
     if (!post.root_id && !previousPost.root_id) {
-        //If a non-comment post has some replies then its header must be visible
-        //If a non-comment post is a consecutive post then its header must be hidden
-        return getReplyCount(post) > 0 || !areConsecutivePostsBySameUser(post, previousPost);
+        //If the current post has some replies then its header must be visible
+        if (getReplyCount(post) > 0) {
+            return true;
+        }
+
+        //If the current post and previous post are consequetive, then the current post's header must be hidden
+        if (areConsecutivePostsBySameUser(post, previousPost)) {
+            return false;
+        }
     }
 
     return true;
 }
 
-export function getCurrentUserLastPostGroupFirstPostId(state, postListIds) {
+export function getLastCurrentUserPostWithHeaderId(state, postListIds) {
     //This function returns the first post id of the last post group by the current user
-    const getReplyCount = makeGetReplyCount();
 
-    //This function is made to avoid passing the state to the isPostHeaderVisible function
-    const getReplyCountModified = (post) => {
-        return getReplyCount(state, post);
-    };
+    const getReplyCount = makeGetReplyCount().bind(null, state);
+    const firstPostWithHeaderID = postListIds.find((postID, index) => {
+        const post = getValidUserPostFromId(state, postID);
 
-    let nextPost;
-    for (let i = 0; i < postListIds.length; i++) {
-        const post = nextPost || getValidUserPostFromId(state, postListIds[i]);
-        nextPost = i + 1 < postListIds.length ? getValidUserPostFromId(state, postListIds[i + 1]) : undefined;
-
-        if (isPostOwner(state, post) && !isSystemMessage(post) && isPostHeaderVisible(post, nextPost, getReplyCountModified)) {
-            return post.id;
+        let nextPost;
+        if (index + 1 < postListIds.length) {
+            const nextPostID = postListIds[index + 1];
+            nextPost = getValidUserPostFromId(state, nextPostID);
         }
-    }
 
-    return '';
+        return (isPostOwner(state, post) && !isSystemMessage(post) && isPostHeaderVisible(post, nextPost, getReplyCount));
+    });
+
+    return firstPostWithHeaderID || '';
 }
