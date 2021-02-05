@@ -301,11 +301,7 @@ class ChannelHeader extends React.PureComponent {
 
     showCustomStatusTextTooltip = () => {
         const element = this.customStatusTextRef;
-        if (element && element.offsetWidth < element.scrollWidth) {
-            this.setState({showCustomStatusTooltip: true});
-        } else {
-            this.setState({showCustomStatusTooltip: false});
-        }
+        this.setState({showCustomStatusTooltip: element && element.offsetWidth < element.scrollWidth});
     }
 
     renderCustomStatus = () => {
@@ -348,7 +344,7 @@ class ChannelHeader extends React.PureComponent {
             );
         }
 
-        const dmHeaderCustomStatus = (
+        return (
             <>
                 <CustomStatusEmoji
                     userID={this.props.dmUser.id}
@@ -361,8 +357,6 @@ class ChannelHeader extends React.PureComponent {
                 {customStatusTextComponent}
             </>
         );
-
-        return dmHeaderCustomStatus;
     }
 
     render() {
@@ -506,14 +500,13 @@ class ChannelHeader extends React.PureComponent {
                 />
             );
 
-            const dmHeaderCustomStatus = this.renderCustomStatus();
             dmHeaderTextStatus = (
                 <span className='header-status__text'>
                     <FormattedMessage
                         id={`status_dropdown.set_${channel.status}`}
                         defaultMessage={Utils.toTitleCase(channel.status)}
                     />
-                    {dmHeaderCustomStatus}
+                    {this.renderCustomStatus()}
                 </span>
             );
         }

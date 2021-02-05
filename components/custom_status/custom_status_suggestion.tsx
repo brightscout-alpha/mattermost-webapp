@@ -8,9 +8,9 @@ import {UserCustomStatus} from 'mattermost-redux/types/users';
 import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
+import Markdown from 'components/markdown';
 
 import './custom_status.scss';
-import Markdown from 'components/markdown';
 
 type Props = {
     handleSuggestionClick: (status: UserCustomStatus) => void;
@@ -24,16 +24,13 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
     const [show, setShow] = useState(false);
     const textRef = useRef<HTMLSpanElement>(null);
 
-    const showClearButton = () => {
-        setShow(true);
-    };
+    const showClearButton = () => setShow(true);
 
-    const hideClearButton = () => {
-        setShow(false);
-    };
+    const hideClearButton = () => setShow(false);
 
-    const handleRecentCustomStatusClear = (event: React.MouseEvent<HTMLElement>) => {
+    const handleRecentCustomStatusClear = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
+        event.preventDefault();
         if (handleClear) {
             handleClear({
                 emoji,
@@ -42,10 +39,7 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
         }
     };
 
-    const showTextTooltip = () => {
-        const element = textRef.current;
-        return element && element.offsetWidth < element.scrollWidth;
-    };
+    const showTextTooltip = () => textRef.current && textRef.current.offsetWidth < textRef.current.scrollWidth;
 
     const clearButton = handleClear ?
         (
@@ -61,17 +55,17 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                         </Tooltip>
                     }
                 >
-                    <span
-                        className='input-clear-x'
+                    <button
+                        className='style--none input-clear-x'
                         onClick={handleRecentCustomStatusClear}
                     >
                         <i className='icon icon-close-circle'/>
-                    </span>
+                    </button>
                 </OverlayTrigger>
             </div>
         ) : null;
 
-    let customStatusText = (
+    const customStatusTextContent = (
         <span
             className='statusSuggestion__text'
             ref={textRef}
@@ -83,13 +77,13 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
         </span>
     );
 
-    if (showTextTooltip()) {
-        customStatusText = (
+    const customStatusText = showTextTooltip() ?
+        (
             <OverlayTrigger
                 delayShow={Constants.OVERLAY_TIME_DELAY}
                 placement='top'
                 overlay={
-                    <Tooltip id='custom-status-tooltip'>
+                    <Tooltip id='custom-status-text'>
                         <Markdown
                             message={text}
                             enableFormatting={true}
@@ -97,14 +91,13 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                     </Tooltip>
                 }
             >
-                {customStatusText}
+                {customStatusTextContent}
             </OverlayTrigger>
-        );
-    }
+        ) : customStatusTextContent;
 
     return (
         <div
-            className='statusSuggestion__row cursor--pointer a11y--active'
+            className='statusSuggestion__row cursor--pointer'
             onMouseEnter={showClearButton}
             onMouseLeave={hideClearButton}
             onClick={

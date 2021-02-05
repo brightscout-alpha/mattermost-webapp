@@ -101,11 +101,7 @@ export default class SidebarChannelLink extends React.PureComponent<Props, State
     // TODO: Is there a better way to do this?
     enableToolTipIfNeeded = () => {
         const element = this.gmItemRef.current || this.labelRef.current;
-        if (element && element.offsetWidth < element.scrollWidth) {
-            this.setState({showTooltip: true});
-        } else {
-            this.setState({showTooltip: false});
-        }
+        this.setState({showTooltip: Boolean(element && element.offsetWidth < element.scrollWidth)});
     }
 
     getAriaLabel = () => {

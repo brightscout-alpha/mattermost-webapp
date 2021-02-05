@@ -8,7 +8,6 @@ import {FormattedMessage, injectIntl} from 'react-intl';
 
 import EventEmitter from 'mattermost-redux/utils/event_emitter';
 
-import './profile_popover.scss';
 import Timestamp from 'components/timestamp';
 import OverlayTrigger from 'components/overlay_trigger';
 import UserSettingsModal from 'components/user_settings/modal';
@@ -19,7 +18,6 @@ import {t} from 'utils/i18n';
 import {intlShape} from 'utils/react_intl';
 import * as Utils from 'utils/utils.jsx';
 import Pluggable from 'plugins/pluggable';
-
 import AddUserToChannelModal from 'components/add_user_to_channel_modal';
 import LocalizedIcon from 'components/localized_icon';
 import ToggleModalButtonRedux from 'components/toggle_modal_button_redux';
@@ -28,6 +26,8 @@ import Popover from 'components/widgets/popover';
 import CustomStatusEmoji from 'components/custom_status/custom_status_emoji';
 import CustomStatusModal from 'components/custom_status/custom_status_modal';
 import Markdown from 'components/markdown';
+
+import './profile_popover.scss';
 
 /**
  * The profile popover, or hovercard, that appears with user information when clicking
@@ -163,11 +163,7 @@ class ProfilePopover extends React.PureComponent {
 
     showCustomStatusTextTooltip = () => {
         const element = this.customStatusTextRef.current;
-        if (element && element.offsetWidth < element.scrollWidth) {
-            this.setState({showCustomStatusTooltip: true});
-        } else {
-            this.setState({showCustomStatusTooltip: false});
-        }
+        this.setState({showCustomStatusTooltip: element && element.offsetWidth < element.scrollWidth});
     }
 
     handleShowDirectChannel = (e) => {

@@ -64,11 +64,7 @@ export default class SidebarChannelButtonOrLink extends React.PureComponent {
 
     enableToolTipIfNeeded = () => {
         const element = this.displayNameRef.current;
-        if (element && element.offsetWidth < element.scrollWidth) {
-            this.setState({showTooltip: true});
-        } else {
-            this.setState({showTooltip: false});
-        }
+        this.setState({showTooltip: element && element.offsetWidth < element.scrollWidth});
     }
 
     trackChannelSelectedEvent = () => {
@@ -99,18 +95,13 @@ export default class SidebarChannelButtonOrLink extends React.PureComponent {
             );
         }
 
-        let customStatus = null;
-        if (this.props.channelType === Constants.DM_CHANNEL) {
-            customStatus = (
+        const customStatus = this.props.channelType === Constants.DM_CHANNEL ?
+            (
                 <CustomStatusEmoji
                     userID={this.props.teammateId}
                     showTooltip={true}
-                    emojiStyle={{
-                        marginLeft: 4,
-                    }}
                 />
-            );
-        }
+            ) : null;
 
         const content = (
             <React.Fragment>
