@@ -1,20 +1,23 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
-import {updateMe} from 'mattermost-redux/actions/users';
 import {DispatchFunc, GetStateFunc} from 'mattermost-redux/types/actions';
+import {savePreferences} from 'mattermost-redux/actions/preferences';
+import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
+import {PreferenceType} from 'mattermost-redux/types/preferences';
 
-import {CustomStatusInitialisationStates} from 'types/store/custom_status';
+import {Preferences} from 'utils/constants';
 
-export function setCustomStatusInitialisationState(props: Partial<CustomStatusInitialisationStates>) {
+export function setCustomStatusInitialisationState(initializationState: string) {
     return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
-        const user = {...getCurrentUser(getState())};
-        const userProps = {...user.props};
-        let initialState = userProps.customStatusInitialisationState ? JSON.parse(userProps.customStatusInitialisationState) : {};
-        initialState = {...initialState, ...props};
-        userProps.customStatusInitialisationState = JSON.stringify(initialState);
-        user.props = userProps;
-        await dispatch(updateMe(user));
+        const state = getState();
+        const currentUserId = getCurrentUserId(state);
+        const preferences: PreferenceType = {
+            user_id: currentUserId,
+            category: Preferences.CATEGORY_CUSTOM_STATUS,
+            name: Preferences.NAME_CUSTOM_STATUS_TUTORIAL_STATE,
+            value: initializationState,
+        };
+        await dispatch(savePreferences(currentUserId, [preferences]));
     };
 }

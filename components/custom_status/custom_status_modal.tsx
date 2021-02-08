@@ -53,7 +53,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
 
     const handleCustomStatusInitializationState = () => {
         if (firstTimeModalOpened) {
-            dispatch(setCustomStatusInitialisationState({hasOpenedSetCustomStatusModal: true}));
+            dispatch(setCustomStatusInitialisationState(Constants.Preferences.CUSTOM_STATUS_MODAL_VIEWED));
         }
     };
 
