@@ -163,7 +163,8 @@ class ProfilePopover extends React.PureComponent {
 
     showCustomStatusTextTooltip = () => {
         const element = this.customStatusTextRef.current;
-        this.setState({showCustomStatusTooltip: element && element.offsetWidth < element.scrollWidth});
+        const showCustomStatusTooltip = element && element.offsetWidth < element.scrollWidth;
+        this.setState({showCustomStatusTooltip});
     }
 
     handleShowDirectChannel = (e) => {

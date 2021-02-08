@@ -104,7 +104,8 @@ export default class StatusDropdown extends React.PureComponent {
 
     showCustomStatusTextTooltip = () => {
         const element = this.customStatusTextRef;
-        this.setState({showCustomStatusTooltip: element && element.offsetWidth < element.scrollWidth});
+        const showCustomStatusTooltip = element && element.offsetWidth < element.scrollWidth;
+        this.setState({showCustomStatusTooltip});
     }
 
     renderProfilePicture = () => {
@@ -154,7 +155,7 @@ export default class StatusDropdown extends React.PureComponent {
                 <span className='d-flex'>
                     <CustomStatusEmoji
                         showTooltip={false}
-                        emojiStyle={{}}
+                        emojiStyle={{marginLeft: 0}}
                     />
                 </span>
             ) : (
@@ -240,8 +241,17 @@ export default class StatusDropdown extends React.PureComponent {
                         {customStatusEmoji}
                     </span>
                     {customStatusTextComponent}
-                    {clearButton || pulsatingDot}
+                    {pulsatingDot}
                 </Menu.ItemToggleModalRedux>
+                {clearButton &&
+                    <li
+                        className='MenuItem'
+                        role='menuitem'
+                        id='status-menu-custom-status-clear'
+                    >
+                        {clearButton}
+                    </li>
+                }
             </Menu.Group>
         );
     }

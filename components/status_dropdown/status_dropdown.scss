@@ -7,7 +7,7 @@
     max-width: 238px;
     &:hover {
         background-color: rgba(var(--center-channel-color-rgb), 0.08);
-        .custom-status-emoji{
+        .custom-status-emoji {
             fill: var(--center-channel-color-72);
         }
     }
@@ -18,27 +18,30 @@
 }
 
 .custom_status {
-    &__icon{
+    &__icon {
         margin-right: 10px;
     }
 
-    &__text{
+    &__text {
         overflow: hidden;
         height: 28px;
+        max-width: 73%;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    &__clear{
+    &__clear {
         display: flex;
         align-items: center;
-        margin-left: auto;
         color: rgba(var(--center-channel-color-rgb), 0.52);
+        position: absolute;
+        top: 15px;
+        right: 24px;
     }
 }
 
 .custom-status {
-    &-emoji{
+    &-emoji {
         fill: var(--center-channel-color-56);
     }
 
@@ -56,24 +59,24 @@
 
     &, &::before, &::after {
         height: 12px;
-        width : 12px;
-        background-color : var(--online-indicator);
-        border-radius : 50%;
+        width: 12px;
+        background-color: var(--online-indicator);
+        border-radius: 50%;
     }
 
     &::before, &::after {
-        content:"";
-        display:block;
+        content: "";
+        display: block;
         position: absolute;
         left: 0;
         top: 0;
     }
 
-    &::after{
+    &::after {
         animation: pulse1 2s ease 0s infinite;
     }
 
-    &::before{
+    &::before {
         animation: pulse2 2s ease 0s infinite;
     }
 }

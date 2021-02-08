@@ -301,7 +301,8 @@ class ChannelHeader extends React.PureComponent {
 
     showCustomStatusTextTooltip = () => {
         const element = this.customStatusTextRef;
-        this.setState({showCustomStatusTooltip: element && element.offsetWidth < element.scrollWidth});
+        const showCustomStatusTooltip = element && element.offsetWidth < element.scrollWidth;
+        this.setState({showCustomStatusTooltip});
     }
 
     renderCustomStatus = () => {
