@@ -25,7 +25,7 @@ import Avatar from 'components/widgets/users/avatar';
 import Popover from 'components/widgets/popover';
 import CustomStatusEmoji from 'components/custom_status/custom_status_emoji';
 import CustomStatusModal from 'components/custom_status/custom_status_modal';
-import Markdown from 'components/markdown';
+import CustomStatusText from 'components/custom_status/custom_status_text';
 
 import './profile_popover.scss';
 
@@ -149,22 +149,13 @@ class ProfilePopover extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.customStatusTextRef = React.createRef();
         this.state = {
             loadingDMChannel: -1,
-            showCustomStatusTooltip: false,
         };
     }
 
     componentDidMount() {
         this.props.actions.getMembershipForCurrentEntities(this.props.userId);
-        this.showCustomStatusTextTooltip();
-    }
-
-    showCustomStatusTextTooltip = () => {
-        const element = this.customStatusTextRef.current;
-        const showCustomStatusTooltip = element && element.offsetWidth < element.scrollWidth;
-        this.setState({showCustomStatusTooltip});
     }
 
     handleShowDirectChannel = (e) => {
@@ -279,46 +270,20 @@ class ProfilePopover extends React.PureComponent {
                         showTooltip={false}
                         emojiStyle={{
                             marginRight: 4,
+                            marginTop: 3,
                         }}
                     />
                 </span>
             );
 
-            let customStatusText = (
-                <div
-                    className='text-nowrap user-popover__email pb-1'
-                    ref={this.customStatusTextRef}
-                >
-                    <Markdown
-                        message={customStatus.text}
-                        enableFormatting={true}
-                    />
-                </div>
-            );
-
-            if (this.state.showCustomStatusTooltip) {
-                customStatusText = (
-                    <OverlayTrigger
-                        delayShow={Constants.OVERLAY_TIME_DELAY}
-                        placement='top'
-                        overlay={
-                            <Tooltip id='custom-status-tooltip'>
-                                <Markdown
-                                    message={customStatus.text}
-                                    enableFormatting={true}
-                                />
-                            </Tooltip>
-                        }
-                    >
-                        {customStatusText}
-                    </OverlayTrigger>
-                );
-            }
-
             customStatusContent = (
                 <div className='d-flex'>
                     {customStatusEmoji}
-                    {customStatusText}
+                    <CustomStatusText
+                        tooltipDirection='top'
+                        text={customStatus.text}
+                        className='user-popover__email pb-1'
+                    />
                 </div>
             );
         } else if (canSetCustomStatus) {
