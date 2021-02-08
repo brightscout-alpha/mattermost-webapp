@@ -22,7 +22,7 @@ import StatusOnlineIcon from 'components/widgets/icons/status_online_icon';
 import StatusDndIcon from 'components/widgets/icons/status_dnd_icon';
 import StatusOfflineIcon from 'components/widgets/icons/status_offline_icon';
 import OverlayTrigger from 'components/overlay_trigger';
-import Markdown from 'components/markdown';
+import CustomStatusText from 'components/custom_status/custom_status_text';
 
 import './status_dropdown.scss';
 
@@ -50,15 +50,6 @@ export default class StatusDropdown extends React.PureComponent {
         profilePicture: '',
         status: UserStatuses.OFFLINE,
         customStatus: {},
-    }
-
-    constructor(props) {
-        super(props);
-        this.customStatusTextRef = React.createRef();
-    }
-
-    state = {
-        showCustomStatusTooltip: false,
     }
 
     isUserOutOfOffice = () => {
@@ -101,12 +92,6 @@ export default class StatusDropdown extends React.PureComponent {
 
         this.props.actions.openModal(resetStatusModalData);
     };
-
-    showCustomStatusTextTooltip = () => {
-        const element = this.customStatusTextRef;
-        const showCustomStatusTooltip = element && element.offsetWidth < element.scrollWidth;
-        this.setState({showCustomStatusTooltip});
-    }
 
     renderProfilePicture = () => {
         if (!this.props.profilePicture) {
@@ -162,40 +147,6 @@ export default class StatusDropdown extends React.PureComponent {
                 <EmojiIcon className={'custom-status-emoji'}/>
             );
 
-        let customStatusTextComponent = (
-            <span
-                className='custom_status__text'
-                ref={(element) => {
-                    this.customStatusTextRef = element;
-                    this.showCustomStatusTextTooltip();
-                }}
-            >
-                <Markdown
-                    message={customStatusText}
-                    enableFormatting={true}
-                />
-            </span>
-        );
-
-        if (isStatusSet && this.state.showCustomStatusTooltip) {
-            customStatusTextComponent = (
-                <OverlayTrigger
-                    delayShow={Constants.OVERLAY_TIME_DELAY}
-                    placement='bottom'
-                    overlay={
-                        <Tooltip id='custom-status-tooltip'>
-                            <Markdown
-                                message={customStatusText}
-                                enableFormatting={true}
-                            />
-                        </Tooltip>
-                    }
-                >
-                    {customStatusTextComponent}
-                </OverlayTrigger>
-            );
-        }
-
         const clearButton = isStatusSet &&
             (
                 <span
@@ -240,7 +191,10 @@ export default class StatusDropdown extends React.PureComponent {
                     <span className='custom_status__icon'>
                         {customStatusEmoji}
                     </span>
-                    {customStatusTextComponent}
+                    <CustomStatusText
+                        text={customStatusText}
+                        className='custom_status__text'
+                    />
                     {pulsatingDot}
                 </Menu.ItemToggleModalRedux>
                 {clearButton &&

@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {Tooltip} from 'react-bootstrap';
 
 import {UserCustomStatus} from 'mattermost-redux/types/users';
@@ -8,7 +8,7 @@ import {UserCustomStatus} from 'mattermost-redux/types/users';
 import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
-import Markdown from 'components/markdown';
+import CustomStatusText from './custom_status_text';
 
 import './custom_status.scss';
 
@@ -22,7 +22,6 @@ type Props = {
 const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
     const {handleSuggestionClick, emoji, text, handleClear} = props;
     const [show, setShow] = useState(false);
-    const textRef = useRef<HTMLSpanElement>(null);
 
     const showClearButton = () => setShow(true);
 
@@ -38,8 +37,6 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
             });
         }
     };
-
-    const showTextTooltip = () => textRef.current && textRef.current.offsetWidth < textRef.current.scrollWidth;
 
     const clearButton = handleClear ?
         (
@@ -65,36 +62,6 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
             </div>
         ) : null;
 
-    const customStatusTextContent = (
-        <span
-            className='statusSuggestion__text'
-            ref={textRef}
-        >
-            <Markdown
-                message={text}
-                enableFormatting={true}
-            />
-        </span>
-    );
-
-    const customStatusText = showTextTooltip() ?
-        (
-            <OverlayTrigger
-                delayShow={Constants.OVERLAY_TIME_DELAY}
-                placement='top'
-                overlay={
-                    <Tooltip id='custom-status-text'>
-                        <Markdown
-                            message={text}
-                            enableFormatting={true}
-                        />
-                    </Tooltip>
-                }
-            >
-                {customStatusTextContent}
-            </OverlayTrigger>
-        ) : customStatusTextContent;
-
     return (
         <div
             className='statusSuggestion__row cursor--pointer'
@@ -114,7 +81,11 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                     size={20}
                 />
             </div>
-            {customStatusText}
+            <CustomStatusText
+                text={text}
+                tooltipDirection='top'
+                className='statusSuggestion__text'
+            />
             {show && clearButton}
         </div>
     );
