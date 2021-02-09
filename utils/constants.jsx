@@ -101,9 +101,6 @@ export const Preferences = {
     RECOMMENDED_NEXT_STEPS: 'recommended_next_steps',
     CLOUD_UPGRADE_BANNER: 'cloud_upgrade_banner',
     ADMIN_CLOUD_UPGRADE_PANEL: 'admin_cloud_upgrade_panel',
-    CATEGORY_CUSTOM_STATUS: 'custom_status',
-    NAME_CUSTOM_STATUS_TUTORIAL_STATE: 'custom_status_tutorial_state',
-    CUSTOM_STATUS_MODAL_VIEWED: 'custom_status_modal_viewed',
 };
 
 export const ActionTypes = keyMirror({
