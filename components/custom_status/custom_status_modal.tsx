@@ -6,7 +6,6 @@ import classNames from 'classnames';
 import {FormattedMessage} from 'react-intl';
 import {Tooltip} from 'react-bootstrap';
 import {setCustomStatus, unsetCustomStatus, removeRecentCustomStatus} from 'mattermost-redux/actions/users';
-import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
 import {setCustomStatusInitialisationState} from 'mattermost-redux/actions/preferences';
 import {Preferences} from 'mattermost-redux/constants';
 
@@ -20,6 +19,8 @@ import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
 import {showStatusDropdownPulsatingDot} from 'utils/custom_status';
+
+import {getCustomStatus, getRecentCustomStatuses} from 'selectors/views/custom_status';
 
 import CustomStatusSuggestion from './custom_status_suggestion';
 
@@ -41,10 +42,8 @@ const defaultCustomStatusSuggestions: UserCustomStatus[] = [
 
 const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const dispatch = useDispatch();
-    const currentUser = useSelector((state: GlobalState) => getCurrentUser(state));
-    const userProps = currentUser.props || {};
-    const currentCustomStatus = userProps.customStatus ? JSON.parse(userProps.customStatus) : {emoji: '', text: ''};
-    const recentCustomStatuses = userProps.recentCustomStatuses ? JSON.parse(userProps.recentCustomStatuses) : [];
+    const currentCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state));
+    const recentCustomStatuses = useSelector((state: GlobalState) => getRecentCustomStatuses(state));
     const customStatusControlRef = useRef(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [text, setText] = useState<string>(currentCustomStatus.text);
