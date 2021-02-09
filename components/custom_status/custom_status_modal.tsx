@@ -5,10 +5,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import classNames from 'classnames';
 import {FormattedMessage} from 'react-intl';
 import {Tooltip} from 'react-bootstrap';
-import {setCustomStatus, unsetCustomStatus, removeRecentCustomStatus} from 'mattermost-redux/actions/users';
-import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
-import {setCustomStatusInitialisationState} from 'mattermost-redux/actions/preferences';
+
 import {Preferences} from 'mattermost-redux/constants';
+import {setCustomStatusInitialisationState} from 'mattermost-redux/actions/preferences';
+import {removeRecentCustomStatus, setCustomStatus, unsetCustomStatus} from 'mattermost-redux/actions/users';
+import {getMyPreferences} from 'mattermost-redux/selectors/entities/preferences';
+import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
+import {getPreferenceKey} from 'mattermost-redux/utils/preference_utils';
 
 import {UserCustomStatus} from 'mattermost-redux/types/users';
 
@@ -44,7 +47,17 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const currentUser = useSelector((state: GlobalState) => getCurrentUser(state));
     const userProps = currentUser.props || {};
     const currentCustomStatus = userProps.customStatus ? JSON.parse(userProps.customStatus) : {emoji: '', text: ''};
-    const recentCustomStatuses = userProps.recentCustomStatuses ? JSON.parse(userProps.recentCustomStatuses) : [];
+
+    const recentCustomStatuses = useSelector((state: GlobalState) => {
+        const preferences = getMyPreferences(state);
+        const key = getPreferenceKey(Preferences.CATEGORY_CUSTOM_STATUS, 'recent_custom_statuses');
+        try {
+            return JSON.parse(preferences[key].value);
+        } catch (e) {
+            return [];
+        }
+    });
+
     const customStatusControlRef = useRef(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [text, setText] = useState<string>(currentCustomStatus.text);
