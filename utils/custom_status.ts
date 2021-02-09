@@ -3,9 +3,9 @@
 import {getMyPreferences} from 'mattermost-redux/selectors/entities/preferences';
 
 import {getPreferenceKey} from 'mattermost-redux/utils/preference_utils';
+import {Preferences} from 'mattermost-redux/constants';
 
 import {GlobalState} from 'types/store';
-import {Preferences} from 'utils/constants';
 
 function showCustomStatusPulsatingDotAndPostHeader(state: GlobalState) {
     const preferences = getMyPreferences(state);

@@ -4,9 +4,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import classNames from 'classnames';
 import {FormattedMessage} from 'react-intl';
+import {Tooltip} from 'react-bootstrap';
 import {setCustomStatus, unsetCustomStatus, removeRecentCustomStatus} from 'mattermost-redux/actions/users';
 import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
-import {Tooltip} from 'react-bootstrap';
+import {setCustomStatusInitialisationState} from 'mattermost-redux/actions/preferences';
+import {Preferences} from 'mattermost-redux/constants';
 
 import {UserCustomStatus} from 'mattermost-redux/types/users';
 
@@ -18,7 +20,6 @@ import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
 import {showStatusDropdownPulsatingDot} from 'utils/custom_status';
-import {setCustomStatusInitialisationState} from 'actions/views/custom_status';
 
 import CustomStatusSuggestion from './custom_status_suggestion';
 
@@ -53,7 +54,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
 
     const handleCustomStatusInitializationState = () => {
         if (firstTimeModalOpened) {
-            dispatch(setCustomStatusInitialisationState(Constants.Preferences.CUSTOM_STATUS_MODAL_VIEWED));
+            dispatch(setCustomStatusInitialisationState(Preferences.CUSTOM_STATUS_MODAL_VIEWED));
         }
     };
 

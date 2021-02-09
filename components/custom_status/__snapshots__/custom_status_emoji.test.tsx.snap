@@ -34,7 +34,11 @@ exports[`components/custom_status/custom_status_emoji should match snapshot 1`] 
 >
   <CustomStatusEmoji
     emojiSize={16}
-    emojiStyle={Object {}}
+    emojiStyle={
+      Object {
+        "marginLeft": 4,
+      }
+    }
     showTooltip={false}
     tooltipDirection="top"
     userID=""
@@ -76,7 +80,11 @@ exports[`components/custom_status/custom_status_emoji should match snapshot with
 >
   <CustomStatusEmoji
     emojiSize={34}
-    emojiStyle={Object {}}
+    emojiStyle={
+      Object {
+        "marginLeft": 4,
+      }
+    }
     showTooltip={true}
     tooltipDirection="bottom"
     userID=""
