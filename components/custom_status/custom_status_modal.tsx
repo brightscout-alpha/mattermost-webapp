@@ -20,6 +20,10 @@ import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
 import {getCustomStatus, getRecentCustomStatuses, showStatusDropdownPulsatingDot} from 'selectors/views/custom_status';
 
+import MenuWrapper from 'components/widgets/menu/menu_wrapper';
+import Menu from 'components/widgets/menu/menu';
+import {localizeMessage} from 'utils/utils';
+
 import CustomStatusSuggestion from './custom_status_suggestion';
 
 import 'components/category_modal.scss';
@@ -46,6 +50,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [text, setText] = useState<string>(currentCustomStatus.text);
     const [emoji, setEmoji] = useState<string>(currentCustomStatus.emoji);
+    const [expiry, setExpiry] = useState<string>('4 hours');
     const isStatusSet = emoji || text;
     const firstTimeModalOpened = useSelector((state: GlobalState) => showStatusDropdownPulsatingDot(state));
 
@@ -98,6 +103,11 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
 
     const handleRecentCustomStatusClear = (status: any) => {
         dispatch(removeRecentCustomStatus(status));
+    };
+
+    const handleExpiryChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, expiryValue: string) => {
+        event.preventDefault();
+        setExpiry(expiryValue);
     };
 
     const customStatusEmoji = emoji || text ?
@@ -219,6 +229,81 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
         </div>
     );
 
+    const expiryMenuItems = [
+        {
+            text: "Don't clear",
+            localizationId: 'dont_clear',
+            id: 'dont-clear',
+        },
+        {
+            text: '30 minutes',
+            localizationId: 'thirty_minutes',
+            id: 'thirty-minutes',
+        },
+        {
+            text: '1 hour',
+            localizationId: 'one_hour',
+            id: 'one-hour',
+        },
+        {
+            text: '4 hours',
+            localizationId: 'four_hours',
+            id: 'four-hours',
+        },
+        {
+            text: 'Today',
+            localizationId: 'today',
+            id: 'today',
+        },
+        {
+            text: 'This week',
+            localizationId: 'this_week',
+            id: 'this-week',
+        },
+    ];
+
+    const expiryMenu = (
+        <div className='statusExpiry'>
+            <div className='statusExpiry__content'>
+                <MenuWrapper
+                    className={'statusExpiry__menu'}
+                >
+                    <span className='expiry-wrapper expiry-selector'>
+                        <FormattedMessage
+                            id='expiry_dropdown.clear_after'
+                            defaultMessage='Clear after: '
+                        />
+                        <span className='expiry-value'>
+                            {expiry}
+                        </span>
+                        <span>
+                            <i
+                                className='fa fa-angle-down'
+                                aria-hidden='true'
+                            />
+                        </span>
+                    </span>
+                    <Menu
+                        ariaLabel={localizeMessage('expiry_dropdown.menuAriaLabel', 'Clear after')}
+                        id='statusExpiryMenu'
+                    >
+                        <Menu.Group>
+                            {expiryMenuItems.map((item, index) => (
+                                <Menu.ItemAction
+                                    key={index}
+                                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleExpiryChange(event, item.text)}
+                                    ariaLabel={localizeMessage(`expiry_dropdown.${item.localizationId}`, item.text).toLowerCase()}
+                                    text={localizeMessage(`expiry_dropdown.${item.localizationId}`, item.text)}
+                                    id={`expiry-menu-${item.id}`}
+                                />
+                            ))}
+                        </Menu.Group>
+                    </Menu>
+                </MenuWrapper>
+            </div>
+        </div>
+    );
+
     return (
         <GenericModal
             enforceFocus={false}
@@ -283,6 +368,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                     {clearButton}
                 </div>
                 {!isStatusSet && suggestion}
+                {isStatusSet && expiryMenu}
             </div>
         </GenericModal>
     );

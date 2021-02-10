@@ -1,3 +1,5 @@
+@import 'utils/variables';
+
 .StatusModal {
     width: 600px;
 
@@ -207,5 +209,21 @@
 #custom-status-tooltip{
     p{
         margin: 0;
+    }
+}
+
+.statusExpiry {
+    position: relative;
+    top: 48px;
+    font-size: 14px;
+    display: inline-block;
+
+    &__menu {
+        cursor: pointer;
+
+        .expiry-value {
+            color: $black;
+            margin-right: 4px;
+        }
     }
 }
