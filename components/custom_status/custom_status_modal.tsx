@@ -18,9 +18,7 @@ import {GlobalState} from 'types/store';
 import OverlayTrigger from 'components/overlay_trigger';
 import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
-import {showStatusDropdownPulsatingDot} from 'utils/custom_status';
-
-import {getCustomStatus, getRecentCustomStatuses} from 'selectors/views/custom_status';
+import {getCustomStatus, getRecentCustomStatuses, showStatusDropdownPulsatingDot} from 'selectors/views/custom_status';
 
 import CustomStatusSuggestion from './custom_status_suggestion';
 

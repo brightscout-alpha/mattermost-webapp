@@ -25,3 +25,18 @@ export function isCustomStatusEnabled(state: GlobalState) {
     const config = getConfig(state);
     return config && config.EnableCustomUserStatuses === 'true';
 }
+
+function showCustomStatusPulsatingDotAndPostHeader(state: GlobalState) {
+    const preferences = getMyPreferences(state);
+    const key = getPreferenceKey(Preferences.CATEGORY_CUSTOM_STATUS, Preferences.NAME_CUSTOM_STATUS_TUTORIAL_STATE);
+    const hasViewedCustomStatusModal = preferences[key] && preferences[key].value === Preferences.CUSTOM_STATUS_MODAL_VIEWED;
+    return !hasViewedCustomStatusModal;
+}
+
+export function showStatusDropdownPulsatingDot(state: GlobalState) {
+    return showCustomStatusPulsatingDotAndPostHeader(state);
+}
+
+export function showPostHeaderUpdateStatusButton(state: GlobalState) {
+    return showCustomStatusPulsatingDotAndPostHeader(state);
+}

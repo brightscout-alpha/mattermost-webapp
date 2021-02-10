@@ -4,9 +4,10 @@ import * as UserSelectors from 'mattermost-redux/selectors/entities/users';
 import * as GeneralSelectors from 'mattermost-redux/selectors/entities/general';
 import * as PreferenceSelectors from 'mattermost-redux/selectors/entities/preferences';
 import * as PreferenceUtils from 'mattermost-redux/utils/preference_utils';
+import {Preferences} from 'mattermost-redux/constants';
 
 import configureStore from 'store';
-import {getCustomStatus, getRecentCustomStatuses, isCustomStatusEnabled} from 'selectors/views/custom_status';
+import {getCustomStatus, getRecentCustomStatuses, isCustomStatusEnabled, showStatusDropdownPulsatingDot, showPostHeaderUpdateStatusButton} from 'selectors/views/custom_status';
 
 import {TestHelper} from 'utils/test_helper';
 
@@ -71,7 +72,7 @@ describe('isCustomStatusEnabled', () => {
         EnableCustomUserStatuses: 'true',
     };
 
-    it('should return true if EnableCustomUserStatuses is true in the config', async () => {
+    it('should return false if EnableCustomUserStatuses is false in the config', async () => {
         const store = await configureStore();
         expect(isCustomStatusEnabled(store.getState())).toBeFalsy();
     });
@@ -80,5 +81,28 @@ describe('isCustomStatusEnabled', () => {
         const store = await configureStore();
         (GeneralSelectors.getConfig as jest.Mock).mockReturnValue(config);
         expect(isCustomStatusEnabled(store.getState())).toBeTruthy();
+    });
+});
+
+describe('showStatusDropdownPulsatingDot and showPostHeaderUpdateStatusButton', () => {
+    const preference = {
+        myPreference: {
+            value: '',
+        },
+    };
+
+    it('should return true if user has not opened the custom status modal before', async () => {
+        const store = await configureStore();
+        (PreferenceSelectors.getMyPreferences as jest.Mock).mockReturnValue(preference);
+        (PreferenceUtils.getPreferenceKey as jest.Mock).mockReturnValue('myPreference');
+        expect(showStatusDropdownPulsatingDot(store.getState())).toBeTruthy();
+    });
+
+    it('should return false if user has opened the custom status modal before', async () => {
+        const store = await configureStore();
+        preference.myPreference.value = Preferences.CUSTOM_STATUS_MODAL_VIEWED;
+        (PreferenceSelectors.getMyPreferences as jest.Mock).mockReturnValue(preference);
+        (PreferenceUtils.getPreferenceKey as jest.Mock).mockReturnValue('myPreference');
+        expect(showPostHeaderUpdateStatusButton(store.getState())).toBeFalsy();
     });
 });
