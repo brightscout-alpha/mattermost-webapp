@@ -8,6 +8,8 @@ import {Tooltip} from 'react-bootstrap';
 import {setCustomStatus, unsetCustomStatus, removeRecentCustomStatus} from 'mattermost-redux/actions/users';
 import {setCustomStatusInitialisationState} from 'mattermost-redux/actions/preferences';
 import {Preferences} from 'mattermost-redux/constants';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import {NavbarElementProps} from 'react-day-picker';
 
 import {UserCustomStatus} from 'mattermost-redux/types/users';
 
@@ -33,6 +35,12 @@ type Props = {
     onHide: () => void;
 };
 
+type ExpiryMenuItem = {
+    text: string;
+    value: string;
+    localizationId: string;
+}
+
 const EMOJI_PICKER_WIDTH_OFFSET = 308;
 const defaultCustomStatusSuggestions: UserCustomStatus[] = [
     {emoji: 'calendar', text: 'In a meeting'},
@@ -50,7 +58,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [text, setText] = useState<string>(currentCustomStatus.text);
     const [emoji, setEmoji] = useState<string>(currentCustomStatus.emoji);
-    const [expiry, setExpiry] = useState<string>('4 hours');
+    const [expiry, setExpiry] = useState<string>('four-hours');
     const isStatusSet = emoji || text;
     const firstTimeModalOpened = useSelector((state: GlobalState) => showStatusDropdownPulsatingDot(state));
 
@@ -229,38 +237,43 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
         </div>
     );
 
-    const expiryMenuItems = [
-        {
+    const expiryMenuItems: { [key: string]: ExpiryMenuItem } = {
+        'dont-clear': {
             text: "Don't clear",
+            value: "Don't clear",
             localizationId: 'dont_clear',
-            id: 'dont-clear',
         },
-        {
+        'thirty-minutes': {
             text: '30 minutes',
+            value: '30 minutes',
             localizationId: 'thirty_minutes',
-            id: 'thirty-minutes',
         },
-        {
+        'one-hour': {
             text: '1 hour',
+            value: '1 hour',
             localizationId: 'one_hour',
-            id: 'one-hour',
         },
-        {
+        'four-hours': {
             text: '4 hours',
+            value: '4 hours',
             localizationId: 'four_hours',
-            id: 'four-hours',
         },
-        {
+        today: {
             text: 'Today',
+            value: 'Today',
             localizationId: 'today',
-            id: 'today',
         },
-        {
+        'this-week': {
             text: 'This week',
+            value: 'This week',
             localizationId: 'this_week',
-            id: 'this-week',
         },
-    ];
+        'date-and-time': {
+            text: 'Choose date and time',
+            value: 'Date and Time',
+            localizationId: 'choose_date_and_time',
+        },
+    };
 
     const expiryMenu = (
         <div className='statusExpiry'>
@@ -274,7 +287,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                             defaultMessage='Clear after: '
                         />
                         <span className='expiry-value'>
-                            {expiry}
+                            {expiryMenuItems[expiry].value}
                         </span>
                         <span>
                             <i
@@ -288,18 +301,84 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                         id='statusExpiryMenu'
                     >
                         <Menu.Group>
-                            {expiryMenuItems.map((item, index) => (
+                            {Object.keys(expiryMenuItems).map((item, index) => (
                                 <Menu.ItemAction
                                     key={index}
-                                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleExpiryChange(event, item.text)}
-                                    ariaLabel={localizeMessage(`expiry_dropdown.${item.localizationId}`, item.text).toLowerCase()}
-                                    text={localizeMessage(`expiry_dropdown.${item.localizationId}`, item.text)}
-                                    id={`expiry-menu-${item.id}`}
+                                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleExpiryChange(event, item)}
+                                    ariaLabel={localizeMessage(`expiry_dropdown.${expiryMenuItems[item].localizationId}`, expiryMenuItems[item].text).toLowerCase()}
+                                    text={localizeMessage(`expiry_dropdown.${expiryMenuItems[item].localizationId}`, expiryMenuItems[item].text)}
+                                    id={`expiry-menu-${item}`}
                                 />
                             ))}
                         </Menu.Group>
                     </Menu>
                 </MenuWrapper>
+            </div>
+        </div>
+    );
+
+    const Navbar: React.FC<Partial<NavbarElementProps>> = (navbarProps: Partial<NavbarElementProps>) => {
+        const {
+            onPreviousClick,
+            onNextClick,
+            className,
+        } = navbarProps;
+        const styleLeft: React.CSSProperties = {
+            float: 'left',
+        };
+        const styleRight: React.CSSProperties = {
+            float: 'right',
+        };
+        return (
+            <div className={className}>
+                <button
+                    className='style--none'
+                    style={styleLeft}
+                    onClick={() => onPreviousClick()}
+                >
+                    {'←'}
+                </button>
+                <button
+                    className='style--none'
+                    style={styleRight}
+                    onClick={() => onNextClick()}
+                >
+                    {'→'}
+                </button>
+            </div>
+        );
+    };
+
+    const showDateAndTimeField = isStatusSet && expiry === 'date-and-time';
+    const dateTimeInputContainer = (
+        <div className='dateTime'>
+            <div className='dateTime__date-input'>
+                <span className='dateTime__input-title'>{'Date'}</span>
+                <span className='dateTime__date-icon'>
+                    <i
+                        className='fa fa-calendar'
+                        aria-hidden='true'
+                    />
+                </span>
+                <DayPickerInput
+                    component={(inputProps: any) => (
+                        <input
+                            {...inputProps}
+                            placeholder=''
+                            value='Today'
+                        />)}
+                    dayPickerProps={{navbarElement: <Navbar/>}}
+                />
+            </div>
+            <div className='dateTime__time-input'>
+                <span className='dateTime__input-title'>{'Time'}</span>
+                <span className='dateTime__time-icon'>
+                    <i
+                        className='fa fa-clock-o'
+                        aria-hidden='true'
+                    />
+                </span>
+                <input value='12:30 PM'/>
             </div>
         </div>
     );
@@ -368,6 +447,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                     {clearButton}
                 </div>
                 {!isStatusSet && suggestion}
+                {showDateAndTimeField && dateTimeInputContainer}
                 {isStatusSet && expiryMenu}
             </div>
         </GenericModal>
