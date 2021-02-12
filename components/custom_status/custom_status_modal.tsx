@@ -261,6 +261,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                                 onEmojiClose={handleEmojiClose}
                                 onEmojiClick={handleEmojiClick}
                                 rightOffset={calculateRightOffSet()}
+                                defaultHorizontalPosition='right'
                             />
                         )}
                         <button

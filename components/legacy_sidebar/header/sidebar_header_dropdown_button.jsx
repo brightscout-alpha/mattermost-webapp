@@ -79,6 +79,7 @@ export default class SidebarHeaderDropdownButton extends React.PureComponent {
                                 verticalAlign: 'top',
                                 marginLeft: 4,
                             }}
+                            openModalOnClick={true}
                         />
                     </div>
                     <button
