@@ -24,6 +24,16 @@ export default class SidebarHeaderDropdownButton extends React.PureComponent {
         openModal: PropTypes.func,
     };
 
+    handleCustomStatusEmojiClick = (event) => {
+        event.stopPropagation();
+        const customStatusInputModalData = {
+            ModalId: ModalIdentifiers.CUSTOM_STATUS,
+            dialogType: CustomStatusModal,
+            dialogProps: {userId: this.props.currentUser.id},
+        };
+        this.props.openModal(customStatusInputModalData);
+    }
+
     render() {
         let tutorialTip = null;
         if (this.props.showTutorialTip) {
@@ -81,15 +91,7 @@ export default class SidebarHeaderDropdownButton extends React.PureComponent {
                                 verticalAlign: 'top',
                                 marginLeft: 4,
                             }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                const customStatusInputModalData = {
-                                    ModalId: ModalIdentifiers.CUSTOM_STATUS,
-                                    dialogType: CustomStatusModal,
-                                    dialogProps: {userId: this.props.currentUser.id},
-                                };
-                                this.props.openModal(customStatusInputModalData);
-                            }}
+                            onClick={this.handleCustomStatusEmojiClick}
                         />
                     </div>
                     <button
