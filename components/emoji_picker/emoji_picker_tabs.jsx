@@ -18,6 +18,7 @@ export default class EmojiPickerTabs extends PureComponent {
         style: PropTypes.object,
         rightOffset: PropTypes.number,
         topOffset: PropTypes.number,
+        leftOffset: PropTypes.number,
         placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right']),
         customEmojis: PropTypes.object,
         onEmojiClose: PropTypes.func.isRequired,
@@ -29,6 +30,7 @@ export default class EmojiPickerTabs extends PureComponent {
     static defaultProps = {
         rightOffset: 0,
         topOffset: 0,
+        leftOffset: 0,
     };
 
     constructor(props) {
@@ -70,19 +72,15 @@ export default class EmojiPickerTabs extends PureComponent {
                     bottom: this.props.style.bottom,
                     right: this.props.rightOffset,
                 };
-            } else if (this.props.placement === 'right') {
-                // Placement right is only for the emoji overlay in the custom status modal and this styling is specific for that
-                pickerStyle = {
-                    ...this.props.style,
-                    left: this.props.style.left + 3,
-                    top: this.props.style.top + 3,
-                };
             } else {
                 pickerStyle = {...this.props.style};
             }
 
-            if (pickerStyle.top) {
+            if (pickerStyle.top || this.props.topOffset) {
                 pickerStyle.top += this.props.topOffset;
+            }
+            if (pickerStyle.left) {
+                pickerStyle.left += this.props.leftOffset;
             }
         }
 

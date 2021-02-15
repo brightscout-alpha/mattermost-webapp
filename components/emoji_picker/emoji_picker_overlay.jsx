@@ -30,6 +30,7 @@ export default class EmojiPickerOverlay extends React.PureComponent {
         onHide: PropTypes.func.isRequired,
         topOffset: PropTypes.number,
         rightOffset: PropTypes.number,
+        leftOffset: PropTypes.number,
         spaceRequiredAbove: PropTypes.number,
         spaceRequiredBelow: PropTypes.number,
         enableGifPicker: PropTypes.bool,
@@ -102,6 +103,7 @@ export default class EmojiPickerOverlay extends React.PureComponent {
                     onGifClick={this.props.onGifClick}
                     rightOffset={this.state.rightOffset}
                     topOffset={this.props.topOffset}
+                    leftOffset={this.props.leftOffset}
                 />
             </Overlay>
         );
