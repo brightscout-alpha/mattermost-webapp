@@ -149,9 +149,9 @@ export default class StatusDropdown extends React.PureComponent {
 
         const clearButton = isStatusSet &&
             (
-                <span
-                    className='custom_status__clear'
-                >
+                // <span
+                //     className='custom_status__clear'
+                // >
                     <OverlayTrigger
                         delayShow={Constants.OVERLAY_TIME_DELAY}
                         placement='top'
@@ -165,13 +165,13 @@ export default class StatusDropdown extends React.PureComponent {
                         }
                     >
                         <button
-                            className='style--none input-clear-x'
+                            className='style--none input-clear-x custom_status__clear'
                             onClick={this.handleClearStatus}
                         >
                             <i className='icon icon-close-circle'/>
                         </button>
                     </OverlayTrigger>
-                </span>
+                // </span>
             );
 
         const pulsatingDot = !isStatusSet && this.props.showCustomStatusPulsatingDot && (

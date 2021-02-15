@@ -22,9 +22,7 @@ interface ComponentProps {
 
 const CustomStatusEmoji = (props: ComponentProps) => {
     const {emojiSize, emojiStyle, showTooltip, tooltipDirection, userID, onClick} = props;
-    const customStatusEnabled = useSelector((state: GlobalState) => {
-        return isCustomStatusEnabled(state);
-    });
+    const customStatusEnabled = useSelector(isCustomStatusEnabled);
     const customStatus = useSelector((state: GlobalState) => {
         return getCustomStatus(state, userID);
     });
