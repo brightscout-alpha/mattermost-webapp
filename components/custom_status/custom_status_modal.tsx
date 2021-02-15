@@ -110,7 +110,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const customStatusEmoji = emoji || text ?
         (
             <RenderEmoji
-                emoji={emoji || 'speech_balloon'}
+                emojiName={emoji || 'speech_balloon'}
                 size={20}
             />
         ) : (

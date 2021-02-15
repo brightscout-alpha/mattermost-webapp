@@ -32,7 +32,7 @@ const CustomStatusEmoji = (props: ComponentProps) => {
 
     const statusEmoji = (
         <RenderEmoji
-            emoji={customStatus.emoji}
+            emojiName={customStatus.emoji}
             size={emojiSize}
             emojiStyle={emojiStyle}
             onClick={onClick}
@@ -51,7 +51,7 @@ const CustomStatusEmoji = (props: ComponentProps) => {
                 <Tooltip id='custom-status-tooltip'>
                     <div className='custom-status'>
                         <RenderEmoji
-                            emoji={customStatus.emoji}
+                            emojiName={customStatus.emoji}
                             size={14}
                             emojiStyle={{
                                 marginTop: 2,
