@@ -1,31 +1,28 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import classNames from 'classnames';
-import { FormattedMessage } from 'react-intl';
-import { Tooltip } from 'react-bootstrap';
-import { setCustomStatus, unsetCustomStatus, removeRecentCustomStatus } from 'mattermost-redux/actions/users';
-import { setCustomStatusInitialisationState } from 'mattermost-redux/actions/preferences';
-import { Preferences } from 'mattermost-redux/constants';
+import {FormattedMessage} from 'react-intl';
+import {setCustomStatus, unsetCustomStatus, removeRecentCustomStatus} from 'mattermost-redux/actions/users';
+import {setCustomStatusInitialisationState} from 'mattermost-redux/actions/preferences';
+import {Preferences} from 'mattermost-redux/constants';
 
-import { UserCustomStatus } from 'mattermost-redux/types/users';
+import {UserCustomStatus} from 'mattermost-redux/types/users';
 
 import GenericModal from 'components/generic_modal';
 import EmojiIcon from 'components/widgets/icons/emoji_icon';
 import EmojiPickerOverlay from 'components/emoji_picker/emoji_picker_overlay.jsx';
-import { GlobalState } from 'types/store';
-import OverlayTrigger from 'components/overlay_trigger';
+import {GlobalState} from 'types/store';
 import Constants from 'utils/constants';
 import RenderEmoji from 'components/emoji/render_emoji';
-import { getCustomStatus, getRecentCustomStatuses, showStatusDropdownPulsatingDot } from 'selectors/views/custom_status';
+import QuickInput from 'components/quick_input';
+import {getCustomStatus, getRecentCustomStatuses, showStatusDropdownPulsatingDot} from 'selectors/views/custom_status';
 
 import CustomStatusSuggestion from './custom_status_suggestion';
-import { localizeMessage } from 'utils/utils';
 
 import 'components/category_modal.scss';
 import './custom_status.scss';
-import QuickInput from 'components/quick_input';
 
 type Props = {
     onHide: () => void;
@@ -33,11 +30,11 @@ type Props = {
 
 const EMOJI_PICKER_WIDTH_OFFSET = 308;
 const defaultCustomStatusSuggestions: UserCustomStatus[] = [
-    { emoji: 'calendar', text: localizeMessage('custom_status.default_suggestion.in_a_meeting', 'In a meeting') },
-    { emoji: 'hamburger', text: localizeMessage('custom_status.default_suggestion.out_for_lunch', 'Out for lunch') },
-    { emoji: 'sneezing_face', text: localizeMessage('custom_status.default_suggestion.out_sick', 'Out sick') },
-    { emoji: 'house', text: localizeMessage('custom_status.default_suggestion.working_from_home', 'Working from home') },
-    { emoji: 'palm_tree', text: localizeMessage('"custom_status.default_suggestion.on_a_vacation', 'On a vacation') },
+    {emoji: 'calendar', text: 'In a meeting'},
+    {emoji: 'hamburger', text: 'Out for lunch'},
+    {emoji: 'sneezing_face', text: 'Out sick'},
+    {emoji: 'house', text: 'Working from home'},
+    {emoji: 'palm_tree', text: 'On a vacation'},
 ];
 
 const CustomStatusModal: React.FC<Props> = (props: Props) => {
@@ -109,38 +106,13 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                 size={20}
             />
         ) : (
-            <EmojiIcon className={'icon icon--emoji'} />
+            <EmojiIcon className={'icon icon--emoji'}/>
         );
 
-    const clearHandle = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+    const clearHandle = () => {
         setText('');
         setEmoji('');
     };
-
-    const clearButton = isStatusSet ?
-        (
-            <div
-                className='StatusModal__clear-container'
-            >
-                <OverlayTrigger
-                    delayShow={Constants.OVERLAY_TIME_DELAY}
-                    placement='top'
-                    overlay={
-                        <Tooltip id='clear-custom-status'>
-                            {'Clear'}
-                        </Tooltip>
-                    }
-                >
-                    <button
-                        className='style--none input-clear-x'
-                        onClick={clearHandle}
-                    >
-                        <i className='icon icon-close-circle' />
-                    </button>
-                </OverlayTrigger>
-            </div>
-        ) : null;
 
     const disableSetStatus = (currentCustomStatus.text === text && currentCustomStatus.emoji === emoji) ||
         (text === '' && emoji === '');
@@ -221,16 +193,6 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
         </div>
     );
 
-    const inputComponent = (
-        <input
-            className='form-control'
-            placeholder='Set a status'
-            type='text'
-            // value={text}
-            onChange={handleTextChange}
-        />
-    );
-
     return (
         <GenericModal
             enforceFocus={false}
@@ -288,21 +250,15 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                             {customStatusEmoji}
                         </button>
                     </div>
-                    <input
-                        className='form-control'
-                        placeholder='Set a status'
-                        type='text'
+                    <QuickInput
                         value={text}
+                        clearable={Boolean(isStatusSet)}
+                        onClear={clearHandle}
+                        className='form-control'
+                        clearClassName='StatusModal__clear-container'
+                        tooltipPosition='top'
                         onChange={handleTextChange}
                     />
-                    {clearButton}
-                    {/* <QuickInput
-                        value={text}
-                        clearable={isStatusSet}
-                        clearableTooltipText={'Clear'}
-                        onClear={clearHandle}
-                        inputComponent={inputComponent}
-                    /> */}
                 </div>
                 {!isStatusSet && suggestion}
             </div>
