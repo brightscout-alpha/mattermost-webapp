@@ -7,7 +7,7 @@
     &:hover {
         background-color: rgba(var(--center-channel-color-rgb), 0.08);
         .custom-status-emoji {
-            fill: var(--center-channel-color-72);
+            fill: rgba(var(--center-channel-color-rgb), 0.72);
         }
     }
 
@@ -45,7 +45,7 @@
 
 .custom-status {
     &-emoji {
-        fill: var(--center-channel-color-56);
+        fill: rgba(var(--center-channel-color-rgb), 0.56);
     }
 
     &-suggestion-emoji > span:first-child {
