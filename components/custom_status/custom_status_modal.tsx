@@ -51,7 +51,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const dispatch = useDispatch();
     const currentCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state)) || {};
     const recentCustomStatuses = useSelector((state: GlobalState) => getRecentCustomStatuses(state));
-    const customStatusControlRef = useRef(null);
+    const customStatusControlRef = useRef<HTMLDivElement>(null);
     const {formatMessage} = useIntl();
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [text, setText] = useState<string>(currentCustomStatus.text);
@@ -127,8 +127,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
         let rightOffset = Constants.DEFAULT_EMOJI_PICKER_RIGHT_OFFSET;
         const target = getCustomStatusControlRef();
         if (target) {
-            const anyTarget: Element = target;
-            rightOffset = window.innerWidth - anyTarget.getBoundingClientRect().left - EMOJI_PICKER_WIDTH_OFFSET;
+            rightOffset = window.innerWidth - target.getBoundingClientRect().left - EMOJI_PICKER_WIDTH_OFFSET;
             if (rightOffset < 0) {
                 rightOffset = Constants.DEFAULT_EMOJI_PICKER_RIGHT_OFFSET;
             }
