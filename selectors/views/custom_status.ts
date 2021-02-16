@@ -32,8 +32,8 @@ export function isCustomStatusEnabled(state: GlobalState) {
 }
 
 function showCustomStatusPulsatingDotAndPostHeader(state: GlobalState) {
-    const hasViewedCustomStatusModal = get(state, Preferences.CATEGORY_CUSTOM_STATUS, Preferences.NAME_CUSTOM_STATUS_TUTORIAL_STATE);
-    return hasViewedCustomStatusModal !== Preferences.CUSTOM_STATUS_MODAL_VIEWED;
+    const customStatusTutorialState = get(state, Preferences.CATEGORY_CUSTOM_STATUS, Preferences.NAME_CUSTOM_STATUS_TUTORIAL_STATE);
+    return customStatusTutorialState !== Preferences.CUSTOM_STATUS_MODAL_VIEWED;
 }
 
 export function showStatusDropdownPulsatingDot(state: GlobalState) {

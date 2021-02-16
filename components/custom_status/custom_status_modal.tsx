@@ -48,14 +48,11 @@ const defaultCustomStatusSuggestions: DefaultUserCustomStatus[] = [
 const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const getCustomStatus = makeGetCustomStatus();
     const dispatch = useDispatch();
-    let currentCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state));
+    const currentCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state)) || {};
     const recentCustomStatuses = useSelector((state: GlobalState) => getRecentCustomStatuses(state));
     const customStatusControlRef = useRef(null);
     const {formatMessage} = useIntl();
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-    if (!currentCustomStatus) {
-        currentCustomStatus = {};
-    }
     const [text, setText] = useState<string>(currentCustomStatus.text);
     const [emoji, setEmoji] = useState<string>(currentCustomStatus.emoji);
     const isStatusSet = emoji || text;
@@ -216,19 +213,19 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
             onHide={props.onHide}
             modalHeaderText={
                 <FormattedMessage
-                    id='custom_status_modal_header'
+                    id='custom_status.set_status'
                     defaultMessage='Set a status'
                 />
             }
             confirmButtonText={
                 <FormattedMessage
-                    id='custom_status_modal_confirm'
+                    id='custom_status.modal_confirm'
                     defaultMessage='Set Status'
                 />
             }
             cancelButtonText={
                 <FormattedMessage
-                    id='custom_status_modal_cancel'
+                    id='custom_status.modal_cancel'
                     defaultMessage='Clear Status'
                 />
             }

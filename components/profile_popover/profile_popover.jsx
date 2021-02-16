@@ -290,7 +290,6 @@ class ProfilePopover extends React.PureComponent {
                 <div>
                     <button
                         className='user-popover__set-custom-status-btn'
-                        aria-label={Utils.localizeMessage('user_profile.custom_status.set_status', 'Set a status').toLowerCase()}
                         onClick={this.showCustomStatusModal}
                     >
                         <FormattedMessage
@@ -369,7 +368,7 @@ class ProfilePopover extends React.PureComponent {
                         data-testid={`popover-fullname-${this.props.user.username}`}
                         className='overflow--ellipsis text-nowrap'
                     >
-                        <span className='bold'>{fullname}</span>
+                        <span className='user-profile-popover__heading'>{fullname}</span>
                     </div>
                 </OverlayTrigger>,
             );
@@ -445,7 +444,7 @@ class ProfilePopover extends React.PureComponent {
                     key='user-popover-local-time'
                     className='pb-1'
                 >
-                    <span className='bold'>
+                    <span className='user-profile-popover__heading'>
                         <FormattedMessage
                             id='user_profile.account.localTime'
                             defaultMessage='Local Time'
@@ -470,7 +469,7 @@ class ProfilePopover extends React.PureComponent {
                     key='user-popover-status'
                     className='pb-1'
                 >
-                    <span className='bold'>
+                    <span className='user-profile-popover__heading'>
                         <FormattedMessage
                             id='user_profile.custom_status'
                             defaultMessage='Status'

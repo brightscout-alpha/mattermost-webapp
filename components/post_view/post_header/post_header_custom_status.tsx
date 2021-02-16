@@ -6,8 +6,6 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {FormattedMessage} from 'react-intl';
 
-import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
-
 import {setStatusDropdown} from 'actions/views/status_dropdown';
 import CustomStatusEmoji from 'components/custom_status/custom_status_emoji';
 import {makeGetCustomStatus, showPostHeaderUpdateStatusButton, isCustomStatusEnabled} from 'selectors/views/custom_status';
@@ -25,11 +23,14 @@ const PostHeaderCustomStatus = (props: ComponentProps) => {
     const dispatch = useDispatch();
     const userCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state, userId));
     const showUpdateStatusButton = useSelector(showPostHeaderUpdateStatusButton);
-    const currentUserId = useSelector(getCurrentUserId);
     const customStatusEnabled = useSelector(isCustomStatusEnabled);
 
     const isCustomStatusSet = userCustomStatus && userCustomStatus.emoji;
-    if (customStatusEnabled && !isSystemMessage && isCustomStatusSet) {
+    if (!customStatusEnabled || isSystemMessage) {
+        return null;
+    }
+
+    if (isCustomStatusSet) {
         return (
             <CustomStatusEmoji
                 userID={userId}
@@ -42,13 +43,11 @@ const PostHeaderCustomStatus = (props: ComponentProps) => {
         );
     }
 
-    const updateStatus = () => dispatch(setStatusDropdown(true));
-
-    const isCurrentUserPost = userId === currentUserId;
-    if (!(customStatusEnabled && !isCustomStatusSet && showUpdateStatusButton && !isSystemMessage && isCurrentUserPost)) {
+    if (!showUpdateStatusButton) {
         return null;
     }
 
+    const updateStatus = () => dispatch(setStatusDropdown(true));
     return (
         <div
             onClick={updateStatus}
