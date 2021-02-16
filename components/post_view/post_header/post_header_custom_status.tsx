@@ -19,9 +19,9 @@ interface ComponentProps {
     isSystemMessage: boolean;
 }
 
-const getCustomStatus = makeGetCustomStatus();
 const PostHeaderCustomStatus = (props: ComponentProps) => {
     const {userId, isSystemMessage} = props;
+    const getCustomStatus = makeGetCustomStatus();
     const dispatch = useDispatch();
     const userCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state, userId));
     const showUpdateStatusButton = useSelector(showPostHeaderUpdateStatusButton);

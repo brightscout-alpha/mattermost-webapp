@@ -45,8 +45,8 @@ const defaultCustomStatusSuggestions: DefaultUserCustomStatus[] = [
     {emoji: 'palm_tree', message: t('custom_status.suggestions.on_a_vacation'), messageDefault: 'On a vacation'},
 ];
 
-const getCustomStatus = makeGetCustomStatus();
 const CustomStatusModal: React.FC<Props> = (props: Props) => {
+    const getCustomStatus = makeGetCustomStatus();
     const dispatch = useDispatch();
     let currentCustomStatus = useSelector((state: GlobalState) => getCustomStatus(state));
     const recentCustomStatuses = useSelector((state: GlobalState) => getRecentCustomStatuses(state));
