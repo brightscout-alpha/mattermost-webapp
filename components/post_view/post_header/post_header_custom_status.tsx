@@ -10,7 +10,7 @@ import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 
 import {setStatusDropdown} from 'actions/views/status_dropdown';
 import CustomStatusEmoji from 'components/custom_status/custom_status_emoji';
-import {getCustomStatus, showPostHeaderUpdateStatusButton, isCustomStatusEnabled} from 'selectors/views/custom_status';
+import {makeGetCustomStatus, showPostHeaderUpdateStatusButton, isCustomStatusEnabled} from 'selectors/views/custom_status';
 import {GlobalState} from 'types/store';
 import EmojiIcon from 'components/widgets/icons/emoji_icon';
 
@@ -19,6 +19,7 @@ interface ComponentProps {
     isSystemMessage: boolean;
 }
 
+const getCustomStatus = makeGetCustomStatus();
 const PostHeaderCustomStatus = (props: ComponentProps) => {
     const {userId, isSystemMessage} = props;
     const dispatch = useDispatch();
@@ -44,24 +45,24 @@ const PostHeaderCustomStatus = (props: ComponentProps) => {
     const updateStatus = () => dispatch(setStatusDropdown(true));
 
     const isCurrentUserPost = userId === currentUserId;
-    if (customStatusEnabled && !isCustomStatusSet && showUpdateStatusButton && !isSystemMessage && isCurrentUserPost) {
-        return (
-            <div
-                onClick={updateStatus}
-                className='post__header-set-custom-status cursor--pointer'
-            >
-                <EmojiIcon className='post__header-set-custom-status-icon'/>
-                <span className='post__header-set-custom-status-text'>
-                    <FormattedMessage
-                        id='post_header.update_status'
-                        defaultMessage='Update your status'
-                    />
-                </span>
-            </div>
-        );
+    if (!(customStatusEnabled && !isCustomStatusSet && showUpdateStatusButton && !isSystemMessage && isCurrentUserPost)) {
+        return null;
     }
 
-    return null;
+    return (
+        <div
+            onClick={updateStatus}
+            className='post__header-set-custom-status cursor--pointer'
+        >
+            <EmojiIcon className='post__header-set-custom-status-icon'/>
+            <span className='post__header-set-custom-status-text'>
+                <FormattedMessage
+                    id='post_header.update_status'
+                    defaultMessage='Update your status'
+                />
+            </span>
+        </div>
+    );
 };
 
 export default PostHeaderCustomStatus;
