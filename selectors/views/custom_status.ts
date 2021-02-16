@@ -33,7 +33,7 @@ export function isCustomStatusEnabled(state: GlobalState) {
 
 function showCustomStatusPulsatingDotAndPostHeader(state: GlobalState) {
     const customStatusTutorialState = get(state, Preferences.CATEGORY_CUSTOM_STATUS, Preferences.NAME_CUSTOM_STATUS_TUTORIAL_STATE);
-    return customStatusTutorialState !== Preferences.CUSTOM_STATUS_MODAL_VIEWED;
+    return !(customStatusTutorialState && JSON.parse(customStatusTutorialState)[Preferences.CUSTOM_STATUS_MODAL_VIEWED]);
 }
 
 export function showStatusDropdownPulsatingDot(state: GlobalState) {
