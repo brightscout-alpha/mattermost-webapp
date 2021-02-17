@@ -26,6 +26,8 @@ describe('Status dropdown menu', () => {
     });
 
     it('Displays default menu when status icon is clicked', () => {
+        cy.apiUpdateConfig({TeamSettings: {EnableCustomUserStatuses: false}});
+
         // # Wait for posts to load
         cy.get('#postListContent').should('be.visible');
 
@@ -170,6 +172,8 @@ describe('Status dropdown menu', () => {
         });
 
         it('MM-T2927_4 should show Status header, with no pointer cursor', () => {
+            cy.apiUpdateConfig({TeamSettings: {EnableCustomUserStatuses: false}});
+
             // # Wait for posts to load
             cy.get('#postListContent').should('be.visible');
 
@@ -180,5 +184,32 @@ describe('Status dropdown menu', () => {
             cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li:first-child').should('be.visible').
                 and('have.text', 'Status').and('not.have.css', 'cursor', 'pointer');
         });
+    });
+
+    it('should show Set a Custom Status header when EnableCustomStatuses option is enabled, with cursor pointer', () => {
+        cy.apiUpdateConfig({TeamSettings: {EnableCustomUserStatuses: true}});
+
+        // # Wait for posts to load
+        cy.get('#postListContent').should('be.visible');
+
+        // # Open status menu
+        cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
+
+        // # Verify "Set a Custom Status" header is visible
+        cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status').should('be.visible').
+            and('have.text', 'Set a Custom Status').and('have.css', 'cursor', 'pointer');
+    });
+
+    it('opens Custom Status modal on clicking Set a custom status option', () => {
+        // # Wait for posts to load
+        cy.get('#postListContent').should('be.visible');
+
+        // # Open status menu
+        cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
+
+        // # Click the "Set a Custom Status" header
+        cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status').click();
+
+        cy.get('#custom_status_modal').should('exist');
     });
 });
