@@ -6,4 +6,5 @@ export function openCustomStatusModal() {
 
     // # Click the "Set a Custom Status" header
     cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status').click();
+    cy.get('#custom_status_modal').should('exist');
 }

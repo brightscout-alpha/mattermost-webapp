@@ -184,10 +184,6 @@ describe('Status dropdown menu', () => {
     });
 
     describe('Custom status option in Status dropdown menu', () => {
-        const customStatus = {
-            emoji: 'calendar',
-            text: 'In a meeting',
-        };
         before(() => {
             cy.apiUpdateConfig({TeamSettings: {EnableCustomUserStatuses: true}});
             cy.apiClearUserCustomStatus();
@@ -205,19 +201,6 @@ describe('Status dropdown menu', () => {
                 and('have.text', 'Set a Custom Status').and('have.css', 'cursor', 'pointer');
         });
 
-        it('opens Custom Status modal on clicking Set a custom status option', () => {
-            // # Wait for posts to load
-            cy.get('#postListContent').should('be.visible');
-
-            // # Open status menu
-            cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
-
-            // # Click the "Set a Custom Status" header
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status').click();
-
-            cy.get('#custom_status_modal').should('exist');
-        });
-
         specify('clear button should not be visible if status is not set', () => {
             // # Wait for posts to load
             cy.get('#postListContent').should('be.visible');
@@ -226,31 +209,6 @@ describe('Status dropdown menu', () => {
             cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
 
             cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status #custom_status__clear').should('not.exist');
-        });
-
-        it('should show the custom status text and clear button if the status is set', () => {
-            cy.apiUpdateUserCustomStatus(customStatus);
-
-            // # Wait for posts to load
-            cy.get('#postListContent').should('be.visible');
-
-            // # Open status menu
-            cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
-
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu .custom_status__row').should('have.text', customStatus.text);
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status #custom_status__clear').should('exist');
-        });
-
-        it('should clear the custom status text when clear button is clicked', () => {
-            // # Wait for posts to load
-            cy.get('#postListContent').should('be.visible');
-
-            // # Open status menu
-            cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
-
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu .custom_status__row').should('have.text', customStatus.text);
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status #custom_status__clear').click();
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu .custom_status__row').should('have.text', 'Set a Custom Status');
         });
     });
 });
