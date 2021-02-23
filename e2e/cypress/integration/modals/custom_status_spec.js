@@ -10,16 +10,40 @@
 // Stage: @prod
 // Group: @modals
 
-import {openCustomStatusModal} from './helper';
+import { openCustomStatusModal } from './helper';
 
 describe('Custom Status modal', () => {
+    let currentUser;
     before(() => {
+        cy.apiUpdateConfig({ TeamSettings: { EnableCustomUserStatuses: true } });
+
         // # Login as test user and visit town-square
-        cy.apiInitSetup().then(({team}) => {
-            cy.visit(`/${team.name}/channels/town-square`);
+        cy.apiInitSetup({ loginAfter: true }).then(({ team, user, channel }) => {
+            cy.visit(`/${team.name}/channels/${channel.name}`);
+            currentUser = user;
         });
-        cy.apiUpdateConfig({TeamSettings: {EnableCustomUserStatuses: true}});
     });
+
+    describe('MM-T3851 Custom status CTAs for new users', () => {
+        it('MM-T3851_1 should show Update your status in the post header', () => {
+            cy.postMessage('Hello World!');
+            cy.get('.post.current--user .post__header').findByText('Update your status').should('exist');
+        })
+
+        it('MM-T3851_2 should open status dropdown with pulsating dot when clicked on Update your status post header', () => {
+            cy.get('.post.current--user .post__header').findByText('Update your status').click();
+            cy.get('#statusDropdownMenu').should('exist');
+            cy.get('#statusDropdownMenu .custom_status__row .pulsating_dot').should('exist');
+        })
+
+        it('MM-T3851_3 should remove pulsating dot and Update your status post header after opening modal', () => {
+            cy.get('#statusDropdownMenu .custom_status__row .pulsating_dot').click();
+            cy.get('#custom_status_modal').should('exist').get('button.close').click();
+            cy.get('.post.current--user .post__header').findByText('Update your status').should('not.exist');
+            cy.get('.MenuWrapper .status-wrapper').click();
+            cy.get('#statusDropdownMenu .custom_status__row .pulsating_dot').should('not.exist');
+        })
+    })
 
     describe('MM-T3836 Setting a custom status', () => {
         before(() => {
@@ -34,13 +58,13 @@ describe('Custom Status modal', () => {
         };
 
         it('MM-T3836_1 should open status dropdown', () => {
-            cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
+            cy.get('.MenuWrapper .status-wrapper').click();
 
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu').should('exist');
+            cy.get('#statusDropdownMenu').should('exist');
         });
 
         it('MM-T3836_2 Custom status modal opens with 5 default statuses listed', () => {
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status').click();
+            cy.get('#statusDropdownMenu li#status-menu-custom-status').click();
             cy.get('#custom_status_modal').should('exist');
 
             defaultCustomStatuses.map((statusText) => cy.get('#custom_status_modal .statusSuggestion__content').contains('span', statusText));
@@ -140,18 +164,18 @@ describe('Custom Status modal', () => {
         });
 
         it('MM-T3846_5 should show custom status with emoji and clear button in the status dropdown', () => {
-            cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
+            cy.get('.MenuWrapper .status-wrapper').click();
 
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu').should('exist');
+            cy.get('#statusDropdownMenu').should('exist');
 
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu .custom_status__row').should('have.text', customStatus.text);
-            cy.get('.Menu__content.dropdown-menu .custom_status__row span.emoticon').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status #custom_status__clear').should('exist');
+            cy.get('.status-dropdown-menu .dropdown-menu .custom_status__row').should('have.text', customStatus.text);
+            cy.get('.status-dropdown-menu .custom_status__row span.emoticon').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+            cy.get('.MenuWrapper.status-dropdown-menu li#status-menu-custom-status #custom_status__clear').should('exist');
         });
 
         it('MM-T3846_6 should clear the custom status text when clear button is clicked', () => {
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu li#status-menu-custom-status #custom_status__clear').click();
-            cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu .custom_status__row').should('have.text', 'Set a Custom Status');
+            cy.get('.MenuWrapper.status-dropdown-menu li#status-menu-custom-status #custom_status__clear').click();
+            cy.get('.status-dropdown-menu .dropdown-menu .custom_status__row').should('have.text', 'Set a Custom Status');
         });
 
         it('MM-T3846_7 should show previosly set status in the first position in Recents list', () => {
@@ -177,7 +201,7 @@ describe('Custom Status modal', () => {
             cy.get('#custom_status_modal').findByText('Clear Status').click();
 
             cy.get('#custom_status_modal').should('not.exist');
-            cy.get('.MenuWrapper .status-wrapper.status-selector button.status').click();
+            cy.get('.MenuWrapper .status-wrapper').click();
             cy.get('.MenuWrapper.status-dropdown-menu .Menu__content.dropdown-menu .custom_status__row').should('not.have.text', customStatus.text);
         });
     });
@@ -255,6 +279,97 @@ describe('Custom Status modal', () => {
             cy.get('#custom_status_modal .statusSuggestion__suggestions').should('contain', defaultStatus.text);
         });
     });
+
+    describe.only('MM-T3850 Verifying where the custom status appears', () => {
+        before(() => {
+            cy.apiClearUserCustomStatus();
+            cy.reload();
+        });
+
+        const customStatus = {
+            emoji: 'grinning',
+            text: 'Busy',
+        };
+
+        it('MM-T3850_1 set a status', () => {
+            openCustomStatusModal();
+
+            cy.get('#custom_status_modal .StatusModal__input input').type(customStatus.text);
+            cy.get('#custom_status_modal .StatusModal__emoji-button').click();
+            cy.get(`#emojiPicker .emoji-picker-items__container .emoji-picker__item img[data-testid="${customStatus.emoji}"]`).click();
+            cy.get('#custom_status_modal .GenericModal__button.confirm').click();
+
+            cy.get('#custom_status_modal').should('not.exist');
+        });
+
+        it('MM-T3850_2 should display the custom status emoji in LHS header', () => {
+            cy.get('#headerInfoContent span.emoticon').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+        });
+
+        it('MM-T3850_3 should show custom status emoji in the post header', () => {
+            cy.postMessage('Hello World!');
+            cy.get('.post.current--user .post__header span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+        })
+
+        it('MM-T3850_4 should show custom status emoji in the RHS post header', () => {
+            cy.get('.post.current--user .post__header').should('be.visible').trigger('mouseover');
+            cy.get('.post.current--user .post__header').should('be.visible').get('.post-menu button[aria-label="reply"]').should('exist').click({ force: true });
+
+            cy.get('#rhsContent .post.current--user.thread__root .post__header span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+            cy.get('#rhsCloseButton').click();
+        })
+
+        it('MM-T3850_5 should show full custom status in the user popover', () => {
+            cy.get('.post.current--user .post__header .user-popover').click();
+            cy.get('#user-profile-popover').should('exist');
+
+            cy.get('#user-profile-popover #user-popover-status').should('contain', customStatus.text);
+            cy.get('#user-profile-popover #user-popover-status span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+        })
+
+        it('MM-T3850_6 should show custom status emoji next to username in the channel members popover', () => {
+            cy.get('#member_popover').should('exist').click();
+
+            cy.get('#member-list-popover').should('exist');
+            cy.get('#member-list-popover .more-modal__row').first().get('span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+        })
+
+        it('MM-T3850_7 should show custom status emoji next to username in the channel members modal', () => {
+            cy.get('#member-list-popover .more-modal__button button').click();
+            cy.get('#channelMembersModal').should('exist');
+
+            cy.get('#searchUsersInput').type(currentUser.username);
+            cy.get('#channelMembersModal .more-modal__row span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+            cy.get('#channelMembersModal .close').click();
+        })
+        
+        it('MM-T3850_8 should show custom status emoji next to username in the team members modal', () => {
+            cy.get('.sidebar-header-dropdown__icon').click();
+            cy.get('ul.dropdown-menu').should('exist');
+            cy.get('ul.dropdown-menu').findByText('View Members').click();
+            
+            cy.get('#teamMembersModal').should('exist');
+            cy.get('#searchUsersInput').type(currentUser.username);
+            cy.get('#teamMembersModal .more-modal__row span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+            cy.get('#teamMembersModal .close').click();
+        })
+        
+        it('MM-T3850_9 should show custom status emoji next to username in the more direct messages modal', () => {
+            cy.get('button[aria-label="Write a direct message"]').click();
+            cy.get('#moreDmModal').should('exist');
+            cy.get('#moreDmModal #react-select-2-input').type(currentUser.username);
+            cy.get('#moreDmModal .more-modal__row span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+        })
+
+        it('MM-T3850_10 should show custom status emoji next to username in DM in LHS section and full custom status in channel header', () => {
+            cy.get('#moreDmModal .more-modal__row').click();
+            cy.get('#channelHeaderDescription .header-status__text').should('exist');
+            cy.get('#channelHeaderDescription .header-status__text').should('contain', customStatus.text);
+            cy.get('#channelHeaderDescription .header-status__text span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+
+            cy.get('.SidebarChannelGroup_content').contains('(you)').get('span.emoticon').should('exist').invoke('attr', 'data-emoticon').should('contain', customStatus.emoji);
+        })
+    })
 
     describe('Custom status modal basic tests', () => {
         before(() => {
