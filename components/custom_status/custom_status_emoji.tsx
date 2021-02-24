@@ -65,6 +65,9 @@ const CustomStatusEmoji = (props: ComponentProps) => {
                         <RenderEmoji
                             emojiName={customStatus.emoji}
                             size={14}
+                            emojiStyle={{
+                                marginTop: 2,
+                            }}
                         />
                         <span
                             className='custom-status-text'
