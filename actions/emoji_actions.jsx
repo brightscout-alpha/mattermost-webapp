@@ -3,11 +3,14 @@
 
 import * as EmojiActions from 'mattermost-redux/actions/emojis';
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
+import {getCustomEmojisByName} from 'mattermost-redux/selectors/entities/emojis';
 
 import {setRecentEmojis} from 'actions/local_storage';
-import {getEmojiMap, getRecentEmojis} from 'selectors/emojis';
+import {getEmojiMap, getRecentEmojis, isCustomEmojiEnabled} from 'selectors/emojis';
 
 import {ActionTypes} from 'utils/constants';
+import {isCustomStatusEnabled, makeGetCustomStatus} from 'selectors/views/custom_status';
+import {EmojiIndicesByAlias} from 'utils/emoji';
 
 export function loadRecentlyUsedCustomEmojis() {
     return async (dispatch, getState) => {
@@ -70,5 +73,49 @@ export function addRecentEmoji(alias) {
         }
 
         dispatch(setRecentEmojis(recentEmojis));
+    };
+}
+
+export function loadCustomEmojisForUserIds(userIds) {
+    return (dispatch, getState) => {
+        const state = getState();
+        const customEmojiEnabled = isCustomEmojiEnabled(state);
+        const customStatusEnabled = isCustomStatusEnabled(state);
+        if (!customEmojiEnabled || !customStatusEnabled) {
+            return;
+        }
+
+        const systemEmojis = EmojiIndicesByAlias;
+        const customEmojisByName = getCustomEmojisByName(state);
+        const nonExistentCustomEmoji = state.entities.emojis.nonExistentEmoji;
+        const getCustomStatus = makeGetCustomStatus();
+        const emojisToLoad = new Set();
+
+        userIds.forEach((userId) => {
+            const customStatus = getCustomStatus(state, userId);
+            if (!customStatus || !customStatus.emoji) {
+                return;
+            }
+
+            if (systemEmojis.has(customStatus.emoji)) {
+                // It's a system emoji, no need to fetch
+                return;
+            }
+
+            if (nonExistentCustomEmoji.has(customStatus.emoji)) {
+                // We've previously confirmed this is not a custom emoji
+                return;
+            }
+
+            if (customEmojisByName.has(customStatus.emoji)) {
+                // We have the emoji, no need to fetch
+                return;
+            }
+
+            console.log(customStatus.emoji);
+            emojisToLoad.add(customStatus.emoji);
+        });
+
+        dispatch(EmojiActions.getCustomEmojisByName(Array.from(emojisToLoad)));
     };
 }

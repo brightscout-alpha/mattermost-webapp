@@ -9,9 +9,11 @@ import {Client4} from 'mattermost-redux/client';
 import {ActionTypes} from 'utils/constants';
 import en from 'i18n/en.json';
 import {getCurrentLocale, getTranslations} from 'selectors/i18n';
+import {getCurrentUserId} from 'mattermost-redux/selectors/entities/common';
+import {loadCustomEmojisForUserIds} from 'actions/emoji_actions';
 
 export function loadMeAndConfig() {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         // if any new promise needs to be added please be mindful of the order as it is used in root.jsx for redirection
         const promises = [
             dispatch(getClientConfig()),
@@ -30,6 +32,9 @@ export function loadMeAndConfig() {
             resolvedPromises.push(await dispatch(getSubscriptionStats()));
         }
 
+        const state = getState();
+        dispatch(loadCustomEmojisForUserIds([getCurrentUserId(state)]));
+        console.log(state.entities.users);
         return resolvedPromises;
     };
 }

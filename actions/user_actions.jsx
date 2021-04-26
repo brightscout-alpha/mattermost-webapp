@@ -33,12 +33,15 @@ import store from 'stores/redux_store.jsx';
 import * as Utils from 'utils/utils.jsx';
 import {Constants, Preferences, UserStatuses} from 'utils/constants';
 
+import {loadCustomEmojisForUserIds} from './emoji_actions';
+
 export const queue = new PQueue({concurrency: 4});
 const dispatch = store.dispatch;
 const getState = store.getState;
 
 export function loadProfilesAndStatusesInChannel(channelId, page = 0, perPage = General.PROFILE_CHUNK_SIZE, sort = '', options = {}) {
     return async (doDispatch) => {
+        console.log('loadProfilesAndStatusesInChannel');
         const {data} = await doDispatch(UserActions.getProfilesInChannel(channelId, page, perPage, sort, options));
         if (data) {
             doDispatch(loadStatusesForProfilesList(data));
@@ -49,6 +52,7 @@ export function loadProfilesAndStatusesInChannel(channelId, page = 0, perPage = 
 
 export function loadProfilesAndReloadTeamMembers(page, perPage, teamId, options = {}) {
     return async (doDispatch, doGetState) => {
+        console.log('loadProfilesAndReloadTeamMembers');
         const newTeamId = teamId || getCurrentTeamId(doGetState());
         const {data} = await doDispatch(UserActions.getProfilesInTeam(newTeamId, page, perPage, '', options));
         if (data) {
@@ -65,6 +69,7 @@ export function loadProfilesAndReloadTeamMembers(page, perPage, teamId, options 
 export function loadProfilesAndReloadChannelMembers(page, perPage, channelId, sort = '', options = {}) {
     return async (doDispatch, doGetState) => {
         const newChannelId = channelId || getCurrentChannelId(doGetState());
+        console.log('loadProfilesAndReloadChannelMembers');
         const {data} = await doDispatch(UserActions.getProfilesInChannel(newChannelId, page, perPage, sort, options));
         if (data) {
             await Promise.all([
@@ -80,6 +85,7 @@ export function loadProfilesAndReloadChannelMembers(page, perPage, channelId, so
 export function loadProfilesAndTeamMembers(page, perPage, teamId, options) {
     return async (doDispatch, doGetState) => {
         const newTeamId = teamId || getCurrentTeamId(doGetState());
+        console.log('loadProfilesAndTeamMembers');
         const {data} = await doDispatch(UserActions.getProfilesInTeam(newTeamId, page, perPage, '', options));
         if (data) {
             doDispatch(loadTeamMembersForProfilesList(data, newTeamId));
@@ -92,6 +98,7 @@ export function loadProfilesAndTeamMembers(page, perPage, teamId, options) {
 
 export function searchProfilesAndTeamMembers(term = '', options = {}) {
     return async (doDispatch, doGetState) => {
+        console.log('searchProfilesAndTeamMembers');
         const newTeamId = options.team_id || getCurrentTeamId(doGetState());
         const {data} = await doDispatch(UserActions.searchProfiles(term, options));
         if (data) {
@@ -107,6 +114,7 @@ export function searchProfilesAndTeamMembers(term = '', options = {}) {
 
 export function searchProfilesAndChannelMembers(term, options = {}) {
     return async (doDispatch, doGetState) => {
+        console.log('searchProfilesAndChannelMembers');
         const newChannelId = options.in_channel_id || getCurrentChannelId(doGetState());
         const {data} = await doDispatch(UserActions.searchProfiles(term, options));
         if (data) {
@@ -122,6 +130,7 @@ export function searchProfilesAndChannelMembers(term, options = {}) {
 
 export function loadProfilesAndTeamMembersAndChannelMembers(page, perPage, teamId, channelId, options) {
     return async (doDispatch, doGetState) => {
+        console.log('loadProfilesAndTeamMembersAndChannelMembers');
         const state = doGetState();
         const teamIdParam = teamId || getCurrentTeamId(state);
         const channelIdParam = channelId || getCurrentChannelId(state);
@@ -140,6 +149,7 @@ export function loadProfilesAndTeamMembersAndChannelMembers(page, perPage, teamI
 
 export function loadTeamMembersForProfilesList(profiles, teamId, reloadAllMembers = false) {
     return async (doDispatch, doGetState) => {
+        console.log('loadTeamMembersForProfilesList');
         const state = doGetState();
         const teamIdParam = teamId || getCurrentTeamId(state);
         const membersToLoad = {};
@@ -164,6 +174,7 @@ export function loadTeamMembersForProfilesList(profiles, teamId, reloadAllMember
 
 export function loadProfilesWithoutTeam(page, perPage, options) {
     return async (doDispatch) => {
+        console.log('loadProfilesWithoutTeam');
         const {data} = await doDispatch(UserActions.getProfilesWithoutTeam(page, perPage, options));
 
         doDispatch(loadStatusesForProfilesMap(data));
@@ -174,6 +185,7 @@ export function loadProfilesWithoutTeam(page, perPage, options) {
 
 export function loadTeamMembersAndChannelMembersForProfilesList(profiles, teamId, channelId) {
     return async (doDispatch, doGetState) => {
+        console.log('loadTeamMembersAndChannelMembersForProfilesList');
         const state = doGetState();
         const teamIdParam = teamId || getCurrentTeamId(state);
         const channelIdParam = channelId || getCurrentChannelId(state);
@@ -188,6 +200,7 @@ export function loadTeamMembersAndChannelMembersForProfilesList(profiles, teamId
 
 export function loadChannelMembersForProfilesList(profiles, channelId, reloadAllMembers = false) {
     return async (doDispatch, doGetState) => {
+        console.log('loadChannelMembersForProfilesList');
         const state = doGetState();
         const channelIdParam = channelId || getCurrentChannelId(state);
         const membersToLoad = {};
@@ -212,6 +225,7 @@ export function loadChannelMembersForProfilesList(profiles, channelId, reloadAll
 
 export function loadNewDMIfNeeded(channelId) {
     return async (doDispatch, doGetState) => {
+        console.log('loadNewDMIfNeeded');
         const state = doGetState();
         const currentUserId = Selectors.getCurrentUserId(state);
 
@@ -247,6 +261,7 @@ export function loadNewDMIfNeeded(channelId) {
 
 export function loadNewGMIfNeeded(channelId) {
     return async (doDispatch, doGetState) => {
+        console.log('loadNewGMIfNeeded');
         const state = doGetState();
         const currentUserId = Selectors.getCurrentUserId(state);
 
@@ -268,6 +283,7 @@ export function loadNewGMIfNeeded(channelId) {
 
 export function loadProfilesForGroupChannels(groupChannels) {
     return (doDispatch, doGetState) => {
+        console.log('loadProfilesForGroupChannels');
         const state = doGetState();
         const userIdsInChannels = Selectors.getUserIdsInChannels(state);
 
@@ -329,7 +345,10 @@ export async function loadProfilesForGM() {
     const currentUserId = Selectors.getCurrentUserId(state);
 
     for (const channel of getGMsForLoading(state)) {
+        console.log(channel);
         const userIds = userIdsInChannels[channel.id] || new Set();
+        console.log(userIds);
+        await loadCustomEmojisForUserIds(userIds)(dispatch, getState);
         if (userIds.size >= Constants.MIN_USERS_IN_GM) {
             continue;
         }
@@ -354,6 +373,7 @@ export async function loadProfilesForGM() {
         queue.add(() => dispatch(getProfilesAction));
     }
 
+    console.log('loadProfilesForGM');
     await queue.onEmpty();
     if (newPreferences.length > 0) {
         dispatch(savePreferences(currentUserId, newPreferences));
@@ -402,8 +422,10 @@ export async function loadProfilesForDM() {
     }
 
     if (profilesToLoad.length > 0) {
+        console.log('loadProfilesForDM');
         await UserActions.getProfilesByIds(profilesToLoad)(dispatch, getState);
     }
+    await loadCustomEmojisForUserIds(profileIds)(dispatch, getState);
 }
 
 export function autocompleteUsersInTeam(username) {
