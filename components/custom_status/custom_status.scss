@@ -124,12 +124,12 @@
             font-size: 20px;
         }
     }
-    
+
     .MaxLengthInput__validation {
         right: 44px !important;
         top: 17px !important;
     }
-    
+
     .MaxLengthInput.form-control.has-error {
         padding-right: 76px !important;
     }
@@ -207,6 +207,14 @@
         height: 20px;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: 68%;
+    }
+
+    &__duration {
+        margin-left: 8px;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 14px;
     }
 }
 
@@ -277,7 +285,7 @@ span.emoticon[style]:hover {
             left: 15px;
         }
     }
-    
+
     & &__input {
         border: 2px solid var(--button-bg);
         cursor: pointer;
