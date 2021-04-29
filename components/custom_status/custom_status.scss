@@ -156,7 +156,6 @@
     min-height: 232px;
     max-height: 264px;
     overflow: auto;
-    margin-top: 8px;
 
     &__content {
         display: flex;
@@ -239,8 +238,8 @@ span.emoticon[style]:hover {
 }
 
 .statusExpiry {
-    position: relative;
-    top: 48px;
+    position: absolute;
+    top: 56px;
     font-size: 14px;
     display: inline-block;
 
