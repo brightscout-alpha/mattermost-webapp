@@ -61,17 +61,22 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const isCurrentCustomStatusSet = currentCustomStatus.text || currentCustomStatus.emoji;
     const firstTimeModalOpened = useSelector((state: GlobalState) => showStatusDropdownPulsatingDot(state));
 
-    const emojisToLoad = new Set<string>();
-    recentCustomStatuses.forEach((customStatus: UserCustomStatus) => emojisToLoad.add(customStatus.emoji));
-    dispatch(loadCustomEmojisIfNeeded(emojisToLoad));
-
     const handleCustomStatusInitializationState = () => {
         if (firstTimeModalOpened) {
             dispatch(setCustomStatusInitialisationState({[Preferences.CUSTOM_STATUS_MODAL_VIEWED]: true}));
         }
     };
 
-    useEffect(handleCustomStatusInitializationState, []);
+    const loadCustomEmojisForRecentStatuses = () => {
+        const emojisToLoad = new Set<string>();
+        recentCustomStatuses.forEach((customStatus: UserCustomStatus) => emojisToLoad.add(customStatus.emoji));
+        dispatch(loadCustomEmojisIfNeeded(emojisToLoad));
+    };
+
+    useEffect(() => {
+        handleCustomStatusInitializationState();
+        loadCustomEmojisForRecentStatuses();
+    }, []);
 
     const handleSetStatus = () => {
         const customStatus = {
