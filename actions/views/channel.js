@@ -35,6 +35,7 @@ import {getChannelByName} from 'mattermost-redux/utils/channel_utils';
 import EventEmitter from 'mattermost-redux/utils/event_emitter';
 
 import {openDirectChannelToUserId} from 'actions/channel_actions.jsx';
+import {loadCustomEmojisForCustomStatusesByUserIds} from 'actions/emoji_actions';
 import {getLastViewedChannelName} from 'selectors/local_storage';
 import {getLastPostsApiTimeForChannel} from 'selectors/views/channel';
 import {getSocketStatus} from 'selectors/views/websocket';
@@ -231,6 +232,16 @@ export function loadUnreads(channelId, prefetch = false) {
             };
         }
         const actions = [];
+        if (data.posts) {
+            const userIds = new Set();
+            Object.keys(data.posts).forEach((postId) => {
+                const post = data.posts[postId];
+                if (post.user_id) {
+                    userIds.add(post.user_id);
+                }
+            });
+            dispatch(loadCustomEmojisForCustomStatusesByUserIds(userIds));
+        }
 
         actions.push({
             type: ActionTypes.INCREASE_POST_VISIBILITY,
@@ -344,6 +355,17 @@ export function loadPosts({channelId, postId, type}) {
                 error: result.error,
                 moreToLoad: true,
             };
+        }
+
+        if (data.posts) {
+            const userIds = new Set();
+            Object.keys(data.posts).forEach((postid) => {
+                const post = data.posts[postid];
+                if (post.user_id) {
+                    userIds.add(post.user_id);
+                }
+            });
+            dispatch(loadCustomEmojisForCustomStatusesByUserIds(userIds));
         }
         actions.push({
             type: ActionTypes.INCREASE_POST_VISIBILITY,

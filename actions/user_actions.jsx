@@ -33,6 +33,8 @@ import store from 'stores/redux_store.jsx';
 import * as Utils from 'utils/utils.jsx';
 import {Constants, Preferences, UserStatuses} from 'utils/constants';
 
+import {loadCustomEmojisForCustomStatusesByUserIds} from './emoji_actions';
+
 export const queue = new PQueue({concurrency: 4});
 const dispatch = store.dispatch;
 const getState = store.getState;
@@ -328,8 +330,12 @@ export async function loadProfilesForGM() {
     const userIdsInChannels = Selectors.getUserIdsInChannels(state);
     const currentUserId = Selectors.getCurrentUserId(state);
 
+    const userIdsForLoadingCustomEmojis = new Set();
     for (const channel of getGMsForLoading(state)) {
         const userIds = userIdsInChannels[channel.id] || new Set();
+
+        userIds.forEach((userId) => userIdsForLoadingCustomEmojis.add(userId));
+
         if (userIds.size >= Constants.MIN_USERS_IN_GM) {
             continue;
         }
@@ -355,6 +361,10 @@ export async function loadProfilesForGM() {
     }
 
     await queue.onEmpty();
+
+    if (userIdsForLoadingCustomEmojis.size > 0) {
+        dispatch(loadCustomEmojisForCustomStatusesByUserIds(userIdsForLoadingCustomEmojis));
+    }
     if (newPreferences.length > 0) {
         dispatch(savePreferences(currentUserId, newPreferences));
     }
@@ -404,6 +414,7 @@ export async function loadProfilesForDM() {
     if (profilesToLoad.length > 0) {
         await UserActions.getProfilesByIds(profilesToLoad)(dispatch, getState);
     }
+    await loadCustomEmojisForCustomStatusesByUserIds(profileIds)(dispatch, getState);
 }
 
 export function autocompleteUsersInTeam(username) {

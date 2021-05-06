@@ -10,6 +10,8 @@ import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import store from 'stores/redux_store.jsx';
 import {Constants} from 'utils/constants';
 
+import {loadCustomEmojisForCustomStatusesByUserIds} from './emoji_actions';
+
 export function loadStatusesForChannelAndSidebar() {
     return (dispatch, getState) => {
         const state = getState();
@@ -79,10 +81,12 @@ export function loadStatusesForProfilesMap(users) {
 export function loadStatusesByIds(userIds) {
     return (dispatch) => {
         if (userIds.length === 0) {
-            return;
+            return {data: false};
         }
 
         dispatch(getStatusesByIds(userIds));
+        dispatch(loadCustomEmojisForCustomStatusesByUserIds(userIds));
+        return {data: true};
     };
 }
 
