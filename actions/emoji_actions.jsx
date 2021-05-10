@@ -113,9 +113,13 @@ export function loadCustomEmojisIfNeeded(emojis) {
         const systemEmojis = EmojiIndicesByAlias;
         const customEmojisByName = getCustomEmojisByName(state);
         const nonExistentCustomEmoji = state.entities.emojis.nonExistentEmoji;
-        const emojisToLoad = new Set();
+        const emojisToLoad = [];
 
         emojis.forEach((emoji) => {
+            if (!emoji) {
+                return;
+            }
+
             if (systemEmojis.has(emoji)) {
                 // It's a system emoji, no need to fetch
                 return;
@@ -131,10 +135,10 @@ export function loadCustomEmojisIfNeeded(emojis) {
                 return;
             }
 
-            emojisToLoad.add(emoji);
+            emojisToLoad.push(emoji);
         });
 
-        dispatch(EmojiActions.getCustomEmojisByName(Array.from(emojisToLoad)));
+        dispatch(EmojiActions.getCustomEmojisByName(emojisToLoad));
         return {data: true};
     };
 }

@@ -23,6 +23,7 @@ import * as Selectors from 'mattermost-redux/selectors/entities/users';
 import {legacyMakeFilterAutoclosedDMs, makeFilterManuallyClosedDMs} from 'mattermost-redux/selectors/entities/channel_categories';
 import {CategoryTypes} from 'mattermost-redux/constants/channel_categories';
 
+import {loadCustomEmojisForCustomStatusesByUserIds} from 'actions/emoji_actions';
 import {loadStatusesForProfilesList, loadStatusesForProfilesMap} from 'actions/status_actions.jsx';
 import {trackEvent} from 'actions/telemetry_actions.jsx';
 
@@ -32,8 +33,6 @@ import store from 'stores/redux_store.jsx';
 
 import * as Utils from 'utils/utils.jsx';
 import {Constants, Preferences, UserStatuses} from 'utils/constants';
-
-import {loadCustomEmojisForCustomStatusesByUserIds} from './emoji_actions';
 
 export const queue = new PQueue({concurrency: 4});
 const dispatch = store.dispatch;
