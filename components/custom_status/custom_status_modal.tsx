@@ -70,7 +70,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const loadCustomEmojisForRecentStatuses = () => {
         const emojisToLoad = new Set<string>();
         recentCustomStatuses.forEach((customStatus: UserCustomStatus) => emojisToLoad.add(customStatus.emoji));
-        dispatch(loadCustomEmojisIfNeeded(emojisToLoad));
+        dispatch(loadCustomEmojisIfNeeded(Array.from(emojisToLoad)));
     };
 
     useEffect(() => {

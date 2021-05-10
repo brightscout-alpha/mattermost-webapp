@@ -104,6 +104,10 @@ export function loadCustomEmojisForCustomStatusesByUserIds(userIds) {
 
 export function loadCustomEmojisIfNeeded(emojis) {
     return (dispatch, getState) => {
+        if (!emojis || emojis.length === 0) {
+            return {data: false};
+        }
+
         const state = getState();
         const customEmojiEnabled = isCustomEmojiEnabled(state);
         if (!customEmojiEnabled) {
@@ -139,6 +143,24 @@ export function loadCustomEmojisIfNeeded(emojis) {
         });
 
         dispatch(EmojiActions.getCustomEmojisByName(emojisToLoad));
+        return {data: true};
+    };
+}
+
+export function loadCustomStatusEmojisForPostList(posts) {
+    return (dispatch) => {
+        if (!posts || posts.length === 0) {
+            return {data: false};
+        }
+
+        const userIds = new Set();
+        Object.keys(posts).forEach((postId) => {
+            const post = posts[postId];
+            if (post.user_id) {
+                userIds.add(post.user_id);
+            }
+        });
+        dispatch(loadCustomEmojisForCustomStatusesByUserIds(userIds));
         return {data: true};
     };
 }
