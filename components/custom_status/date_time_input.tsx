@@ -69,6 +69,7 @@ const Navbar: React.FC<Partial<NavbarElementProps>> = (navbarProps: Partial<Navb
 const {CUSTOM_STATUS_TIME_PICKER_INTERVALS_IN_MINUTES} = Constants;
 export function getRoundedTime(value: Date) {
     const roundedTo = CUSTOM_STATUS_TIME_PICKER_INTERVALS_IN_MINUTES;
+    console.log(value.toISOString(), new Date().toISOString())
     const start = moment(value);
     const diff = start.minute() % roundedTo;
     if (diff === 0) {
@@ -78,7 +79,7 @@ export function getRoundedTime(value: Date) {
     return moment(start).add(remainder, 'm').seconds(0).milliseconds(0).toDate();
 }
 
-const getDateInIntervals = (startTime: Date): Date[] => {
+const getTimeInIntervals = (startTime: Date): Date[] => {
     const interval = CUSTOM_STATUS_TIME_PICKER_INTERVALS_IN_MINUTES;
     let time = startTime;
     const nextDay = moment(startTime).add(1, 'days').startOf('day').toDate();
@@ -103,19 +104,19 @@ const DateTimeInputContainer: React.FC<Props> = (props: Props) => {
     const [timeOptions, setTimeOptions] = useState<Date[]>([]);
 
     const setTimeAndOptions = () => {
-        const currentTime = timezone ? getCurrentDateTimeForTimezone(timezone) : new Date();
+        const currentTime = new Date();
         let startTime = moment(time).startOf('day').toDate();
         if (time.getDate() === currentTime.getDate()) {
             startTime = getRoundedTime(currentTime);
         }
-        setTimeOptions(getDateInIntervals(startTime));
+        setTimeOptions(getTimeInIntervals(startTime));
     };
 
     useEffect(setTimeAndOptions, [time]);
 
     const handleDayChange = (day: Date, modifiers: DayModifiers) => {
         if (modifiers.today) {
-            const currentTime = timezone ? getCurrentDateTimeForTimezone(timezone) : new Date();
+            const currentTime = new Date();
             const roundedTime = getRoundedTime(currentTime);
             handleChange(roundedTime);
         } else {
@@ -129,7 +130,7 @@ const DateTimeInputContainer: React.FC<Props> = (props: Props) => {
         handleChange(time);
     };
 
-    const currentTime = timezone ? getCurrentDateTimeForTimezone(timezone) : new Date();
+    const currentTime = new Date();
     const modifiers = {
         today: currentTime,
     };

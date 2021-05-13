@@ -93,7 +93,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const firstTimeModalOpened = useSelector(showStatusDropdownPulsatingDot);
     const timezone = useSelector(getCurrentUserTimezone);
 
-    const currentTime = timezone ? getCurrentDateTimeForTimezone(timezone) : new Date();
+    const currentTime = new Date();
     let initialCustomExpiryTime: Date = getRoundedTime(currentTime);
     if (currentCustomStatus?.duration === CustomStatusDuration.DATE_AND_TIME && currentCustomStatus?.expires_at) {
         initialCustomExpiryTime = new Date(currentCustomStatus.expires_at);
@@ -115,24 +115,24 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
             duration: expiry,
             expires_at: calculateExpiryTime(),
         };
+        console.log(customStatus.expires_at)
         dispatch(setCustomStatus(customStatus));
     };
 
     const calculateExpiryTime = (): string => {
-        const currentTime = timezone ? getCurrentDateTimeForTimezone(timezone) : new Date();
         switch (expiry) {
         case CustomStatusDuration.DONT_CLEAR:
             return '';
         case CustomStatusDuration.THIRTY_MINUTES:
-            return moment(currentTime).add(30, 'minutes').seconds(0).milliseconds(0).toISOString();
+            return moment().add(30, 'minutes').seconds(0).milliseconds(0).toISOString();
         case CustomStatusDuration.ONE_HOUR:
-            return moment(currentTime).add(1, 'hour').seconds(0).milliseconds(0).toISOString();
+            return moment().add(1, 'hour').seconds(0).milliseconds(0).toISOString();
         case CustomStatusDuration.FOUR_HOURS:
-            return moment(currentTime).add(4, 'hours').seconds(0).milliseconds(0).toISOString();
+            return moment().add(4, 'hours').seconds(0).milliseconds(0).toISOString();
         case CustomStatusDuration.TODAY:
-            return moment(currentTime).endOf('day').toISOString();
+            return moment().endOf('day').toISOString();
         case CustomStatusDuration.THIS_WEEK:
-            return moment(currentTime).endOf('week').toISOString();
+            return moment().endOf('week').toISOString();
         case CustomStatusDuration.DATE_AND_TIME:
             return customExpiryTime.toISOString();
         default:
