@@ -30,7 +30,9 @@ export function getCurrentDateForTimezone(timezone) {
 
 export function getCurrentDateTimeForTimezone(timezone) {
     const tztime = moment().tz(timezone);
-    const rv = new Date(tztime.year(), tztime.month(), tztime.date(), tztime.hour(), tztime.minute(), tztime.second());
-    // console.log(rv, tztime.toDate())
-    return rv;
+    return new Date(tztime.year(), tztime.month(), tztime.date(), tztime.hour(), tztime.minute(), tztime.second());
+}
+
+export function getCurrentMomentForTimezone(timezone) {
+    return timezone ? moment.tz(timezone) : moment();
 }
