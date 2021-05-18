@@ -1676,6 +1676,7 @@ const {
     TODAY,
     THIS_WEEK,
     DATE_AND_TIME,
+    CUSTOM_DATE_TIME,
 } = CustomStatusDuration;
 
 export const durationValues = {
@@ -1704,6 +1705,10 @@ export const durationValues = {
         defaultMessage: 'This week',
     },
     [DATE_AND_TIME]: {
+        id: t('custom_status.expiry_dropdown.date_and_time'),
+        defaultMessage: 'Date and Time',
+    },
+    [CUSTOM_DATE_TIME]: {
         id: t('custom_status.expiry_dropdown.date_and_time'),
         defaultMessage: 'Date and Time',
     },
