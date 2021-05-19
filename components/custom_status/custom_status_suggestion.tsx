@@ -1,14 +1,14 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, { useState } from 'react';
-import { Tooltip } from 'react-bootstrap';
-import { FormattedMessage } from 'react-intl';
+import React, {useState} from 'react';
+import {Tooltip} from 'react-bootstrap';
+import {FormattedMessage} from 'react-intl';
 
-import { UserCustomStatus } from 'mattermost-redux/types/users';
+import {UserCustomStatus} from 'mattermost-redux/types/users';
 
 import OverlayTrigger from 'components/overlay_trigger';
 import RenderEmoji from 'components/emoji/render_emoji';
-import Constants, { durationValues } from 'utils/constants';
+import Constants, {durationValues} from 'utils/constants';
 
 import CustomStatusText from './custom_status_text';
 
@@ -21,8 +21,8 @@ type Props = {
 };
 
 const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
-    const { handleSuggestionClick, handleClear, status } = props;
-    const { emoji, text, duration } = status;
+    const {handleSuggestionClick, handleClear, status} = props;
+    const {emoji, text, duration} = status;
     const [show, setShow] = useState(false);
 
     const showClearButton = () => setShow(true);
@@ -55,7 +55,7 @@ const CustomStatusSuggestion: React.FC<Props> = (props: Props) => {
                         className='style--none input-clear-x'
                         onClick={handleRecentCustomStatusClear}
                     >
-                        <i className='icon icon-close-circle' />
+                        <i className='icon icon-close-circle'/>
                     </button>
                 </OverlayTrigger>
             </div>

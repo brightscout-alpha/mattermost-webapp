@@ -34,6 +34,9 @@ type Props = {
     onHide: () => void;
 };
 
+// This is the same limit set
+// https://github.com/mattermost/mattermost-server/pull/16835/files#diff-73c61af5954b16f5e3cb5ee786af9eb698f660eff0d65db5556949be5fb6e60bR15
+const CUSTOM_STATUS_TEXT_CHARACTER_LIMIT = 100;
 const EMOJI_PICKER_WIDTH_OFFSET = 308;
 
 type DefaultUserCustomStatus = {
@@ -98,7 +101,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [text, setText] = useState<string>(currentCustomStatus?.text || '');
     const [emoji, setEmoji] = useState<string>(currentCustomStatus?.emoji || '');
-    const [duration, setDuration] = useState<CustomStatusDuration>(currentCustomStatus?.duration === undefined ? defaultDuration: currentCustomStatus?.duration);
+    const [duration, setDuration] = useState<CustomStatusDuration>(currentCustomStatus?.duration === undefined ? defaultDuration : currentCustomStatus?.duration);
     const isStatusSet = Boolean(emoji || text);
     const isCurrentCustomStatusSet = currentCustomStatus?.text || currentCustomStatus?.emoji;
     const firstTimeModalOpened = useSelector(showStatusDropdownPulsatingDot);
@@ -255,11 +258,15 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
         );
     };
 
-    const areSelectedAndSetStatusSame = currentCustomStatus?.emoji === emoji && currentCustomStatus?.text === text && duration === currentCustomStatus?.duration;
+    const areEmojiAndTextSame = currentCustomStatus?.emoji === emoji && currentCustomStatus?.text === text;
+    const areSelectedAndSetStatusSame = areEmojiAndTextSame && duration === currentCustomStatus?.duration;
 
     const showSuggestions = !isStatusSet || areSelectedAndSetStatusSame;
-    const disableSetStatus = showSuggestions || text.length > Constants.CUSTOM_STATUS_TEXT_CHARACTER_LIMIT;
-    const showDateAndTimeField = !showSuggestions && duration === CUSTOM_DATE_TIME;
+    const isCustomExpiryTimeSame = (duration === DATE_AND_TIME || duration === CUSTOM_DATE_TIME) && customExpiryTime.isSame(moment(currentCustomStatus?.expires_at));
+
+    const disableSetStatus = showSuggestions || text.length > CUSTOM_STATUS_TEXT_CHARACTER_LIMIT || (areEmojiAndTextSame && isCustomExpiryTimeSame);
+
+    const showDateAndTimeField = !showSuggestions && (duration === CUSTOM_DATE_TIME || duration === DATE_AND_TIME);
 
     const suggestion = (
         <div
@@ -336,7 +343,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                     <QuickInput
                         inputComponent={MaxLengthInput}
                         value={text}
-                        maxLength={Constants.CUSTOM_STATUS_TEXT_CHARACTER_LIMIT}
+                        maxLength={CUSTOM_STATUS_TEXT_CHARACTER_LIMIT}
                         clearableWithoutValue={Boolean(isStatusSet)}
                         onClear={clearHandle}
                         className='form-control'

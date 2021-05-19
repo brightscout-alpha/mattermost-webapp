@@ -1,14 +1,12 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 import React from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Moment } from 'moment-timezone';
+import {FormattedMessage, useIntl} from 'react-intl';
 
-import Timestamp from 'components/timestamp';
 import MenuWrapper from 'components/widgets/menu/menu_wrapper';
 import Menu from 'components/widgets/menu/menu';
-import { CustomStatusDuration } from 'mattermost-redux/types/users';
-import { durationValues } from 'utils/constants';
+import {CustomStatusDuration} from 'mattermost-redux/types/users';
+import {durationValues} from 'utils/constants';
 
 import ExpiryTime from './expiry_time';
 
@@ -30,12 +28,13 @@ const {
     FOUR_HOURS,
     TODAY,
     THIS_WEEK,
-    CUSTOM_DATE_TIME
+    DATE_AND_TIME,
+    CUSTOM_DATE_TIME,
 } = CustomStatusDuration;
 
 const ExpiryMenu: React.FC<Props> = (props: Props) => {
-    const { duration, handleDurationChange, expiryTime } = props;
-    const { formatMessage } = useIntl();
+    const {duration, handleDurationChange, expiryTime} = props;
+    const {formatMessage} = useIntl();
     const expiryMenuItems: { [key in CustomStatusDuration]: ExpiryMenuItem; } = {
         [DONT_CLEAR]: {
             text: formatMessage(durationValues[DONT_CLEAR]),
@@ -62,7 +61,7 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
             value: formatMessage(durationValues[THIS_WEEK]),
         },
         [CUSTOM_DATE_TIME]: {
-            text: formatMessage({ id: 'custom_status.expiry_dropdown.choose_date_and_time', defaultMessage: 'Choose date and time' }),
+            text: formatMessage({id: 'custom_status.expiry_dropdown.choose_date_and_time', defaultMessage: 'Choose date and time'}),
             value: formatMessage(durationValues[CUSTOM_DATE_TIME]),
         },
     };
@@ -78,7 +77,7 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
                             id='custom_status.expiry_dropdown.clear_after'
                             defaultMessage='Clear after'
                         />{': '}
-                        {expiryTime  && duration !== DONT_CLEAR ? (
+                        {expiryTime && duration !== DONT_CLEAR ? (
                             <ExpiryTime
                                 time={expiryTime}
                                 className='expiry-value'
@@ -86,7 +85,7 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
                             />
                         ) : (
                             <span className='expiry-value'>
-                                {expiryMenuItems[duration].value}
+                                {expiryMenuItems[duration === DATE_AND_TIME ? CUSTOM_DATE_TIME : duration].value}
                             </span>
                         )}
                         <span>
@@ -97,7 +96,7 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
                         </span>
                     </span>
                     <Menu
-                        ariaLabel={formatMessage({ id: 'custom_status.expiry_dropdown.clear_after', defaultMessage: 'Clear after' })}
+                        ariaLabel={formatMessage({id: 'custom_status.expiry_dropdown.clear_after', defaultMessage: 'Clear after'})}
                         id='statusExpiryMenu'
                     >
                         <Menu.Group>
