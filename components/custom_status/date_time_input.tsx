@@ -1,13 +1,12 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {useSelector} from 'react-redux';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import {DayModifiers, NavbarElementProps} from 'react-day-picker';
 import {useIntl} from 'react-intl';
 
 import moment, {Moment} from 'moment-timezone';
-
 
 import MenuWrapper from 'components/widgets/menu/menu_wrapper';
 import Menu from 'components/widgets/menu/menu';
@@ -126,10 +125,10 @@ const DateTimeInputContainer: React.FC<Props> = (props: Props) => {
         }
     };
 
-    const handleTimeChange = (e: React.MouseEvent, time: Date) => {
+    const handleTimeChange = useCallback((e: React.MouseEvent, time: Date) => {
         e.preventDefault();
         handleChange(moment(time));
-    };
+    }, [handleChange]);
 
     const currentTime = new Date();
     const modifiers = {

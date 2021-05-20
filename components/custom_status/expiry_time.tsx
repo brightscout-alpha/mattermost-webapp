@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import {FormattedMessage} from 'react-intl';
 
 import Timestamp, {RelativeRanges} from 'components/timestamp';
+import {Props as TimestampProps} from 'components/timestamp/timestamp';
 
 import {getCurrentMomentForTimezone} from 'utils/timezone';
 
@@ -25,12 +26,12 @@ interface Props {
 
 const ExpiryTime = ({time, timezone, className, showPrefix, withinBrackets}: Props) => {
     const currentMomentTime = getCurrentMomentForTimezone(timezone);
-    const timestampProps: { [key: string]: any } = {
+    const timestampProps: Partial<TimestampProps> = {
         value: time,
         ranges: CUSTOM_STATUS_EXPIRY_RANGES,
     };
 
-    if (moment(time).isSameOrAfter(currentMomentTime.clone().endOf('day'))) {
+    if (moment(time).isSame(currentMomentTime.clone().endOf('day')) || moment(time).isAfter(currentMomentTime.clone().add(1, 'day').endOf('day'))) {
         timestampProps.useTime = false;
     }
 

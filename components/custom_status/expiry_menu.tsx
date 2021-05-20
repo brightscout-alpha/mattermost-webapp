@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import MenuWrapper from 'components/widgets/menu/menu_wrapper';
@@ -18,7 +18,7 @@ type ExpiryMenuItem = {
 type Props = {
     duration: CustomStatusDuration;
     expiryTime?: string;
-    handleDurationChange: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, expiryValue: CustomStatusDuration) => void;
+    handleDurationChange: (expiryValue: CustomStatusDuration) => void;
 }
 
 const {
@@ -35,7 +35,9 @@ const {
 const ExpiryMenu: React.FC<Props> = (props: Props) => {
     const {duration, handleDurationChange, expiryTime} = props;
     const {formatMessage} = useIntl();
-    const expiryMenuItems: { [key in CustomStatusDuration]: ExpiryMenuItem; } = {
+    const [menuItems, setMenuItems] = useState<JSX.Element[]>([]);
+
+    const expiryMenuItems: { [key in CustomStatusDuration]?: ExpiryMenuItem } = {
         [DONT_CLEAR]: {
             text: formatMessage(durationValues[DONT_CLEAR]),
             value: formatMessage(durationValues[DONT_CLEAR]),
@@ -66,6 +68,23 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
         },
     };
 
+    useEffect(() => {
+        const menuItemArray = Object.keys(expiryMenuItems).map((item) => (
+            <Menu.ItemAction
+                key={item.toString()}
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    event.preventDefault();
+                    handleDurationChange(item as CustomStatusDuration);
+                }}
+                ariaLabel={expiryMenuItems[item as CustomStatusDuration]?.text.toLowerCase()}
+                text={expiryMenuItems[item as CustomStatusDuration]?.text}
+                id={`expiry_menu_${item}`}
+            />
+        ));
+
+        setMenuItems(menuItemArray);
+    }, []);
+
     return (
         <div className='statusExpiry'>
             <div className='statusExpiry__content'>
@@ -85,7 +104,7 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
                             />
                         ) : (
                             <span className='expiry-value'>
-                                {expiryMenuItems[duration === DATE_AND_TIME ? CUSTOM_DATE_TIME : duration].value}
+                                {expiryMenuItems[duration === DATE_AND_TIME ? CUSTOM_DATE_TIME : duration]?.value}
                             </span>
                         )}
                         <span>
@@ -100,15 +119,7 @@ const ExpiryMenu: React.FC<Props> = (props: Props) => {
                         id='statusExpiryMenu'
                     >
                         <Menu.Group>
-                            {Object.keys(expiryMenuItems).map((item) => (
-                                <Menu.ItemAction
-                                    key={item}
-                                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleDurationChange(event, item as CustomStatusDuration)}
-                                    ariaLabel={expiryMenuItems[item as CustomStatusDuration].text.toLowerCase()}
-                                    text={expiryMenuItems[item as CustomStatusDuration].text}
-                                    id={`expiry_menu_${item}`}
-                                />
-                            ))}
+                            {menuItems}
                         </Menu.Group>
                     </Menu>
                 </MenuWrapper>

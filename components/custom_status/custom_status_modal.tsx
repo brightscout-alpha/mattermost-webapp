@@ -16,11 +16,12 @@ import GenericModal from 'components/generic_modal';
 import EmojiIcon from 'components/widgets/icons/emoji_icon';
 import EmojiPickerOverlay from 'components/emoji_picker/emoji_picker_overlay.jsx';
 import RenderEmoji from 'components/emoji/render_emoji';
-import {getCustomStatus, getRecentCustomStatuses, showStatusDropdownPulsatingDot} from 'selectors/views/custom_status';
-import {getCurrentUserTimezone} from 'selectors/general';
-import {Constants} from 'utils/constants';
-import {getCurrentMomentForTimezone} from 'utils/timezone';
 import QuickInput, {MaxLengthInput} from 'components/quick_input';
+import {makeGetCustomStatus, getRecentCustomStatuses, showStatusDropdownPulsatingDot, isCustomStatusExpired} from 'selectors/views/custom_status';
+import {getCurrentUserTimezone} from 'selectors/general';
+import {GlobalState} from 'types/store';
+import {getCurrentMomentForTimezone} from 'utils/timezone';
+import {Constants} from 'utils/constants';
 import {t} from 'utils/i18n';
 
 import CustomStatusSuggestion from 'components/custom_status/custom_status_suggestion';
@@ -91,25 +92,27 @@ const defaultCustomStatusSuggestions: DefaultUserCustomStatus[] = [
 ];
 
 const defaultDuration = TODAY;
-
+const getCustomStatus = makeGetCustomStatus();
 const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const dispatch = useDispatch();
     const currentCustomStatus = useSelector(getCustomStatus);
+    const customStatusExpired = useSelector((state: GlobalState) => isCustomStatusExpired(state, currentCustomStatus));
     const recentCustomStatuses = useSelector(getRecentCustomStatuses);
     const customStatusControlRef = useRef<HTMLDivElement>(null);
     const {formatMessage} = useIntl();
+    const isCurrentCustomStatusSet = !customStatusExpired && (currentCustomStatus?.text || currentCustomStatus?.emoji);
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-    const [text, setText] = useState<string>(currentCustomStatus?.text || '');
-    const [emoji, setEmoji] = useState<string>(currentCustomStatus?.emoji || '');
-    const [duration, setDuration] = useState<CustomStatusDuration>(currentCustomStatus?.duration === undefined ? defaultDuration : currentCustomStatus?.duration);
+    const [text, setText] = useState<string>(isCurrentCustomStatusSet ? currentCustomStatus?.text : '');
+    const [emoji, setEmoji] = useState<string>(isCurrentCustomStatusSet ? currentCustomStatus?.emoji : '');
+    const initialDuration = isCurrentCustomStatusSet ? currentCustomStatus?.duration : defaultDuration;
+    const [duration, setDuration] = useState<CustomStatusDuration>(initialDuration === undefined ? defaultDuration : initialDuration);
     const isStatusSet = Boolean(emoji || text);
-    const isCurrentCustomStatusSet = currentCustomStatus?.text || currentCustomStatus?.emoji;
     const firstTimeModalOpened = useSelector(showStatusDropdownPulsatingDot);
     const timezone = useSelector(getCurrentUserTimezone);
 
     const currentTime = getCurrentMomentForTimezone(timezone);
     let initialCustomExpiryTime: Moment = getRoundedTime(currentTime);
-    if (currentCustomStatus?.duration === DATE_AND_TIME && currentCustomStatus?.expires_at) {
+    if (isCurrentCustomStatusSet && currentCustomStatus?.duration === DATE_AND_TIME && currentCustomStatus?.expires_at) {
         initialCustomExpiryTime = moment(currentCustomStatus.expires_at);
     }
     const [customExpiryTime, setCustomExpiryTime] = useState<Moment>(initialCustomExpiryTime);
@@ -171,11 +174,6 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
     const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => setText(event.target.value);
 
     const handleRecentCustomStatusClear = (status: UserCustomStatus) => dispatch(removeRecentCustomStatus(status));
-
-    const handleDurationChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, durationValue: CustomStatusDuration) => {
-        event.preventDefault();
-        setDuration(durationValue);
-    };
 
     const customStatusEmoji = emoji || text ? (
         <RenderEmoji
@@ -365,7 +363,7 @@ const CustomStatusModal: React.FC<Props> = (props: Props) => {
                     <ExpiryMenu
                         duration={duration}
                         expiryTime={showSuggestions ? currentCustomStatus?.expires_at : undefined}
-                        handleDurationChange={handleDurationChange}
+                        handleDurationChange={setDuration}
                     />
                 )}
             </div>
