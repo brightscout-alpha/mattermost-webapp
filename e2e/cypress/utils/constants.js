@@ -44,6 +44,6 @@ export const CustomStatusDuration = {
     TODAY: 'today',
     THIS_WEEK: 'this_week',
     DATE_AND_TIME: 'date_and_time',
-}
+};
 
 export default Constants;
