@@ -38,8 +38,8 @@ export default class BackstageNavbar extends React.PureComponent {
                             />
                         ) : (
                             <FormattedMessage
-                                id='backstage_navbar.backToHome'
-                                defaultMessage='Back to home'
+                                id='backstage_navbar.back'
+                                defaultMessage='Back'
                             />
                         )}
                     </span>
