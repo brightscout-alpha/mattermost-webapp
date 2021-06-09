@@ -39,11 +39,7 @@ function makeMapStateToProps() {
         const team = getCurrentTeam(state);
         const teamMember = getTeamMember(state, team.id, userId);
 
-        let isTeamAdmin = false;
-        if (teamMember && teamMember.scheme_admin) {
-            isTeamAdmin = true;
-        }
-
+        const isTeamAdmin = Boolean(teamMember && teamMember.scheme_admin);
         const channelMember = getChannelMembersInChannels(state)?.[channelId]?.[userId];
 
         let isChannelAdmin = false;
